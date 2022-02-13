@@ -7,10 +7,6 @@
     -fx-background-color: #D9631E;
 }
 
-.orange-slider {
-    -fx-control-inner-background: #D9631E!important;
-}
-
 .orange-slider .thumb {
-    -fx-control-inner-background: #D9631E!important;
+    -fx-focus-color: #D9631E;
 }
