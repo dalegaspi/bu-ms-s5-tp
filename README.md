@@ -2,7 +2,7 @@
 
 This is the final iteration of the JLiteBox software.
 
-![java-img](https://img.shields.io/badge/Java-ED8B00?style=flat&logo=java&logoColor=white) ![sql-lit](https://img.shields.io/badge/SQLite-07405E?style=flat&logo=sqlite&logoColor=white) [![Java CI with Maven](https://github.com/dalegaspi/bu-ms-s5-05/actions/workflows/maven.yml/badge.svg)](https://github.com/dalegaspi/bu-ms-s5-05/actions/workflows/maven.yml)
+![java-img](https://img.shields.io/badge/Java-ED8B00?style=flat&logo=java&logoColor=white) ![sql-lit](https://img.shields.io/badge/SQLite-07405E?style=flat&logo=sqlite&logoColor=white) [![Java CI with Maven](https://github.com/dalegaspi/bu-ms-s5-tp/actions/workflows/maven.yml/badge.svg)](https://github.com/dalegaspi/bu-ms-s5-tp/actions/workflows/maven.yml)
 
 ## Contents
 
