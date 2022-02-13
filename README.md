@@ -31,6 +31,8 @@ This is the final iteration of the JLiteBox software.
 
 ## Overview
 
+<img src="/Users/dexter/Projects/CS622/bu-ms-s5-tp/doc/logo.png" width="100"/>
+
 JLiteBox is a JavaFx application that catalogs RAW and JPG images and allows the user to display them in a GUI.  It is essentially a clone of the popular [Adobe Lightroom](https://lightroom.adobe.com) or [PhotoMechanic by Camera Bits](https://store.camerabits.com).
 
 ## Application Stack
