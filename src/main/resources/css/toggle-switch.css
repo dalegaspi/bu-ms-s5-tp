@@ -1,0 +1,16 @@
+.purple:selected .thumb-area {
+    -fx-background-color: #57379b;
+}
+
+
+.orange:selected .thumb-area {
+    -fx-background-color: #D9631E;
+}
+
+.orange-slider {
+    -fx-control-inner-background: #D9631E!important;
+}
+
+.orange-slider .thumb {
+    -fx-control-inner-background: #D9631E!important;
+}
