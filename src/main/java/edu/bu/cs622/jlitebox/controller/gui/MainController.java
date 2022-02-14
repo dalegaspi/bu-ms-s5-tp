@@ -1,6 +1,7 @@
 package edu.bu.cs622.jlitebox.controller.gui;
 
 import com.google.inject.Injector;
+import com.jfoenix.controls.JFXToggleButton;
 import edu.bu.cs622.jlitebox.App;
 import edu.bu.cs622.jlitebox.config.ConfigurationManager;
 import edu.bu.cs622.jlitebox.image.Image;
@@ -58,8 +59,6 @@ import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 public class MainController implements Initializable {
     private static Logger logger = LoggerFactory.getLogger(MainController.class);
 
-
-
     private ImageCatalog catalog;
     private AboutController aboutController;
     private Injector injector;
@@ -90,10 +89,10 @@ public class MainController implements Initializable {
     private CheckMenuItem menuToggleExifMetaHover;
 
     @FXML
-    private ToggleSwitch toggleExifOnHover;
+    private JFXToggleButton toggleExifOnHover;
 
     @FXML
-    private ToggleSwitch toggleShowExif;
+    private JFXToggleButton toggleShowExif;
 
     @FXML
     private Pane leftToolBarPane;

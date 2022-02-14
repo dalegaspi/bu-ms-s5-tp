@@ -1,0 +1,28 @@
+.icons-badge .badge-pane {
+    -fx-background-color: #D9631E;
+    -fx-background-radius: 23;
+    -fx-pref-width: 46;
+    -fx-pref-height: 23;
+    -fx-alignment: center;
+}
+
+.icons-badge Label {
+    -fx-font-family: "SF Pro Display";
+    -fx-font-weight: BOLD;
+    -fx-font-size: 12px;
+    -fx-text-fill: WHITE;
+}
+
+.custom-jfx-button-raised {
+    -fx-font-family: "SF Pro Display";
+    -fx-font-size: 14px;
+    -jfx-button-type: RAISED;
+    -fx-background-color: #D9631E;
+    -fx-text-fill: WHITE;
+}
+
+.icon {
+    -fx-fill: WHITE;
+    -fx-padding: 10.0;
+    -fx-cursor: hand;
+}

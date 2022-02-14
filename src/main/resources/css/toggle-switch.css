@@ -3,10 +3,33 @@
 }
 
 
+.orange {
+    -fx-pref-height: 20px;
+    -fx-font-family: "SF Pro Display";
+}
+
 .orange:selected .thumb-area {
     -fx-background-color: #D9631E;
 }
 
-.orange-slider .thumb {
+.orange-slider > .thumb {
     -fx-focus-color: #D9631E;
+    -fx-background-color: #D9631E;
+}
+
+.orange-slider {
+    -jfx-default-thumb: #D9631E;
+    -fx-font-family: "SF Pro Display";
+}
+
+.orange-slider .colored-track {
+    -fx-background-color: #D9631E;
+}
+
+.orange-slider .animated-thumb {
+    -fx-background-color: #D9631E;
+}
+
+.orange {
+    -jfx-toggle-color: #D9631E;
 }
