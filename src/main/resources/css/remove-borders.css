@@ -1,0 +1,56 @@
+.split-pane {
+    -fx-background-color: transparent, -fx-background;
+    -fx-box-border: transparent;
+    -fx-padding: 0;
+}
+
+{
+    -fx-orange-color: #D9631E;
+    -fx-pretty-font-family: "SF Pro Display";
+}
+
+.split-pane-divider {
+    -fx-padding: 0;
+    -fx-border-width: 4;
+    -fx-border-color: transparent, -fx-background;
+}
+
+.menu-bar {
+    -fx-font-family: -fx-pretty-font-family;
+    -fx-background-insets: 0;
+    -fx-background-color: -fx-body-color;
+}
+
+.menu-item:hover, .menu-item:focused {
+    -fx-font-family: -fx-pretty-font-family;
+    -fx-background-color: -fx-orange-color;
+}
+
+.menu-bar > .container > .menu-button:hover,
+.menu-bar > .container > .menu-button:focused,
+.menu-bar > .container > .menu-button:showing {
+    -fx-background-color: -fx-orange-color;
+}
+
+.status-bar {
+    -fx-padding: 4px;
+    -fx-pref-height: 30px;
+    -fx-background-color: -fx-body-color;
+    -fx-background-insets: 0, 0;
+    -fx-font-family: -fx-pretty-font-family;
+}
+
+
+.jfx-chip-view {
+    -fx-pref-width: 200;
+    -fx-pref-height: 200;
+    -fx-font-family: "SF Pro Display";
+    -fx-background-color: white;
+}
+
+.toolbar-label {
+    -fx-font-family: -fx-pretty-font-family;
+    -fx-font-size: 14px;
+    -fx-font-weight: light;
+}
+

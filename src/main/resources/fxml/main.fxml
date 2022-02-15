@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import org.controlsfx.control.*?>
-<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import com.jfoenix.controls.*?>
 <?import edu.bu.cs622.jlitebox.controller.javafx.pane.ImageViewPane?>
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXBadge?>
-<?import com.jfoenix.controls.JFXToggleButton?>
-<?import com.jfoenix.controls.JFXSlider?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.StatusBar?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <BorderPane fx:id="mainViewPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-            minHeight="-Infinity" minWidth="-Infinity" style="-fx-background-color: lightgray"
+            minHeight="-Infinity" minWidth="-Infinity" style="-fx-border-width :0 0; -fx-background-color: lightgray"
             xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="edu.bu.cs622.jlitebox.controller.gui.MainController">
     <top>
-        <MenuBar>
+        <MenuBar stylesheets="@../css/remove-borders.css">
             <Menu text="File">
                 <MenuItem onAction="#handleAboutDialog" text="About..."/>
                 <MenuItem onAction="#handleFileImportAction" text="Import Images..."/>
@@ -35,23 +33,25 @@
         </MenuBar>
     </top>
     <center>
-        <SplitPane dividerPositions="0.75" orientation="VERTICAL" prefWidth="400.0"
+        <SplitPane stylesheets="@../css/remove-borders.css" dividerPositions="0.75" orientation="VERTICAL"
+                   prefWidth="400.0"
                    BorderPane.alignment="CENTER">
             <items>
-                <SplitPane dividerPositions="0.75" prefHeight="160.0" prefWidth="200.0">
+                <SplitPane stylesheets="@../css/remove-borders.css" dividerPositions="0.75" prefHeight="160.0"
+                           prefWidth="200.0">
                     <items>
+                        <ImageViewPane prefWidth="400"
+                                       style="-fx-border-color: transparent; -fx-border-style: none; -fx-background-color: darkgray">
+                            <imageView>
+                                <ImageView pickOnBounds="true" preserveRatio="true">
 
-                            <ImageViewPane prefWidth="400" style="-fx-background-color: darkgray">
-                                <imageView>
-                                    <ImageView pickOnBounds="true" preserveRatio="true">
+                                    <Image url="https://www.subtleimages.com/s/tp01/images/gallery/i.jpg">
+                                    </Image>
 
-                                        <Image url="https://www.subtleimages.com/s/tp01/images/gallery/i.jpg">
-                                        </Image>
+                                </ImageView>
+                            </imageView>
 
-                                    </ImageView>
-                                </imageView>
-
-                            </ImageViewPane>
+                        </ImageViewPane>
 
                         <VBox spacing="10.0">
                             <padding>
@@ -73,13 +73,15 @@
                                 </JFXBadge>
                                 -->
 
-                                <JFXButton  stylesheets="@../css/material-design.css" styleClass="custom-jfx-button-raised"  text="Previous">
+                                <JFXButton stylesheets="@../css/material-design.css"
+                                           styleClass="custom-jfx-button-raised" text="Previous">
                                     <graphic>
-                                    <FontIcon iconLiteral="mdi2c-chevron-left" iconSize="20"
-                                              styleClass="icon"/>
+                                        <FontIcon iconLiteral="mdi2c-chevron-left" iconSize="20"
+                                                  styleClass="icon"/>
                                     </graphic>
                                 </JFXButton>
-                                <JFXButton contentDisplay="RIGHT" stylesheets="@../css/material-design.css" styleClass="custom-jfx-button-raised" text="Next" >
+                                <JFXButton contentDisplay="RIGHT" stylesheets="@../css/material-design.css"
+                                           styleClass="custom-jfx-button-raised" text="Next">
                                     <graphic>
                                         <FontIcon iconLiteral="mdi2c-chevron-right" iconSize="20"
                                                   styleClass="icon"/>
@@ -87,17 +89,26 @@
                                 </JFXButton>
 
                             </HBox>
-                            <JFXButton stylesheets="@../css/material-design.css" styleClass="custom-jfx-button-raised" text="Reveal in Filesytem" >
+                            <JFXButton stylesheets="@../css/material-design.css" styleClass="custom-jfx-button-raised"
+                                       text="Reveal in Filesytem">
                                 <graphic>
                                     <FontIcon iconLiteral="mdi2f-folder-image" iconSize="20"
                                               styleClass="icon"/>
                                 </graphic>
                             </JFXButton>
 
-                            <Separator />
-                            <Label style="-fx-font-family: 'SF Pro Display'" wrapText="true" >
+                            <Separator/>
+                            <Label style="-fx-font-family: 'SF Pro Display'" wrapText="true">
                                 <text>
-                                    proin nibh nisl condimentum id venenatis a condimentum vitae sapien pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas sed tempus urna et pharetra pharetra massa massa ultricies mi quis hendrerit dolor magna eget est lorem ipsum dolor sit amet consectetur adipiscing elit pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas integer eget aliquet nibh praesent tristique magna sit amet purus gravida quis blandit turpis cursus in hac habitasse platea dictumst quisque sagittis purus sit amet volutpat consequat mauris nunc congue nisi vitae suscipit tellus mauris a diam maecenas sed enim
+                                    proin nibh nisl condimentum id venenatis a condimentum vitae sapien pellentesque
+                                    habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas sed
+                                    tempus urna et pharetra pharetra massa massa ultricies mi quis hendrerit dolor magna
+                                    eget est lorem ipsum dolor sit amet consectetur adipiscing elit pellentesque
+                                    habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas
+                                    integer eget aliquet nibh praesent tristique magna sit amet purus gravida quis
+                                    blandit turpis cursus in hac habitasse platea dictumst quisque sagittis purus sit
+                                    amet volutpat consequat mauris nunc congue nisi vitae suscipit tellus mauris a diam
+                                    maecenas sed enim
                                 </text>
                             </Label>
 
@@ -106,58 +117,57 @@
                 </SplitPane>
 
                 <VBox fx:id="mainViewContainer" alignment="TOP_CENTER" prefHeight="600.0" prefWidth="800.0"
-                      style="-fx-background-color: lightgray">
+                      style="-fx-box-border: transparent; -fx-background-color: lightgray">
                     <ScrollPane fitToWidth="true" style="-fx-background-color: lightgray"
                                 stylesheets="@../css/scroll-bar.css">
                         <TilePane fx:id="gridContainer" hgap="10" prefColumns="8"
-                                  style="-fx-background-color: lightgray" vgap="10"/>
+                                  style="-fx-box-border: transparent; -fx-background-color: lightgray" vgap="10"/>
                     </ScrollPane>
                 </VBox>
             </items>
         </SplitPane>
     </center>
     <bottom>
-        <StatusBar fx:id="statusBar" text="Ready."/>
+        <StatusBar stylesheets="@../css/remove-borders.css" fx:id="statusBar" text="Ready."/>
     </bottom>
     <left>
         <Pane fx:id="leftToolBarPane"
-              style="-fx-background-color: -fx-outer-border, linear-gradient(to right, derive(-fx-base,0%) 0%, derive(-fx-base,10%) 50%, derive(-fx-base,0%) 100%);"
-              visible="true">
-            <ToolBar orientation="VERTICAL" >
+              style="-fx-background-color: -fx-outer-border, linear-gradient(to right, derive(-fx-base,0%) 0%, derive(-fx-base,10%) 50%, derive(-fx-base,0%) 100%);">
 
-                <items>
-                    <JFXToggleButton size="8" alignment="CENTER_LEFT" fx:id="toggleShowExif"  prefWidth="170.0"
-                                  selected="true" styleClass="orange" stylesheets="@../css/toggle-switch.css"
-                                  text="Show EXIF" >
-
-                    </JFXToggleButton>
-                    <JFXToggleButton size="8" alignment="CENTER_LEFT" fx:id="toggleExifOnHover"  prefWidth="170.0" selected="true"
-                                  styleClass="orange" stylesheets="@../css/toggle-switch.css" text="Full EXIF on Hover"
-                                  >
-
-                    </JFXToggleButton>
-                    <HBox spacing="10">
-                        <padding>
-                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
-                        </padding>
-                        <Label text="Preview Size" style="-fx-font-family: 'SF Pro Display'"/>
-                        <JFXSlider prefWidth="100" fx:id="previewSizeSlider" blockIncrement="1.0" majorTickUnit="1.0" max="5.0" min="1.0"
-                                    minorTickCount="0"  snapToTicks="true" styleClass="orange-slider"
-                                    stylesheets="@../css/toggle-switch.css" value="1.0">
-
-
-                        </JFXSlider>
-                    </HBox>
-
-                </items>
-
+            <ToolBar orientation="VERTICAL">
+                <padding>
+                    <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+                </padding>
                 <BorderPane.margin>
                     <Insets/>
                 </BorderPane.margin>
+                <JFXToggleButton size="8" alignment="CENTER_LEFT" fx:id="toggleShowExif" prefWidth="170.0"
+                                 selected="true" styleClass="orange" stylesheets="@../css/toggle-switch.css"
+                                 text="Show EXIF">
+
+                </JFXToggleButton>
+                <JFXToggleButton size="8" alignment="CENTER_LEFT" fx:id="toggleExifOnHover" prefWidth="170.0"
+                                 selected="true"
+                                 styleClass="orange" stylesheets="@../css/toggle-switch.css"
+                                 text="Full EXIF on Hover"
+                >
+
+                </JFXToggleButton>
+                <Label styleClass="toolbar-label" stylesheets="@../css/remove-borders.css" text="Preview Size"/>
+                <JFXSlider prefWidth="100" fx:id="previewSizeSlider" blockIncrement="1.0" majorTickUnit="1.0"
+                           max="5.0" min="1.0"
+                           minorTickCount="0" snapToTicks="true" styleClass="orange-slider"
+                           stylesheets="@../css/toggle-switch.css" value="1.0">
+                    <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                    </padding>
+
+                </JFXSlider>
+
+                <Label text="Filters"/>
+                <JFXChipView stylesheets="@../css/remove-borders.css">
+                </JFXChipView>
             </ToolBar>
-
         </Pane>
-
     </left>
-
 </BorderPane>
