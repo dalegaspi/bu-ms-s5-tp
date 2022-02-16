@@ -1,6 +1,12 @@
-# CS22 Term Project
+# CS622 Term Project
 
-This is the final iteration of the JLiteBox software.
+<p align="center">
+<img src="doc/logo.png" width="150"/>
+<br><br>
+JLiteBox: An Image Catalog Software
+</p>
+
+
 
 ![java-img](https://img.shields.io/badge/Java-ED8B00?style=flat&logo=java&logoColor=white) ![sql-lit](https://img.shields.io/badge/SQLite-07405E?style=flat&logo=sqlite&logoColor=white) [![Java CI with Maven](https://github.com/dalegaspi/bu-ms-s5-tp/actions/workflows/maven.yml/badge.svg)](https://github.com/dalegaspi/bu-ms-s5-tp/actions/workflows/maven.yml)
 
@@ -30,8 +36,6 @@ This is the final iteration of the JLiteBox software.
   - [Multi-Threading](#multi-threading)
 
 ## Overview
-
-<img src="doc/logo.png" width="100"/>
 
 JLiteBox is a JavaFx application that catalogs RAW and JPG images and allows the user to display them in a GUI.  It is essentially a clone of the popular [Adobe Lightroom](https://lightroom.adobe.com) or [PhotoMechanic by Camera Bits](https://store.camerabits.com).
 
