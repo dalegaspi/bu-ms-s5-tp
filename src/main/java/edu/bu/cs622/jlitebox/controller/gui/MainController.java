@@ -35,6 +35,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.controlsfx.control.Notifications;
 import org.controlsfx.control.StatusBar;
 import org.controlsfx.control.ToggleSwitch;
 import org.slf4j.Logger;
@@ -171,6 +172,11 @@ public class MainController implements Initializable {
                                 logger.info("Refreshing view...");
                                 initializeImageCollectionView(true);
                                 statusBar.setText(statusBarDefaultText);
+
+                                Notifications.create()
+                                        .title("JLiteBox Import Directory")
+                                        .text(String.format("Import from directory [%s] completed.", selectedDirectory.getPath()))
+                                        .showInformation();
                             }));
         }
     }
