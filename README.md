@@ -251,21 +251,37 @@ We are using the JSON format to serialize/deserialize objects to make it more po
 
 We are using SQLite3 to persist our image metadata and JPEG preview blobs.  Below is the fields for the database.  The artifacts are in the `/db` sub-folder including the schema
 
+##### Image table
 | Name              | Type    | Nullable? | Remarks                                                               |
 |-------------------|---------|-----------|-----------------------------------------------------------------------|
 | name              | text    | no        | PK, Name derived from src file name                                   |
 | image_type        | text    | yes       | JPG for JPEG (default), RAW based on the src file name extension      |
 | src_path          | text    | no        | The location in the file storage                                      |
-| camera_brand      | text    | yes       | Camera brand (extracted from EXIF metadata)                           |
-| camera_model      | text    | yes       | camera model (extracted from EXIF metadata)                           |
-| camera_autofocus  | numeric | yes       | is camera auto-focus? (inferred from brand/model)                     |
-| lens_brand        | text    | yes       | lens brand (extracted from EXIF metadata)                             |
+| camera_id         | text    | yes       | Camera ID (FK to Camera table)                                        |
+| lens_id           | text    | yes       | Lens ID (FK to Lens table)                                            |
 | lens_focal_length | real    | yes       | Lens focal length (extracted from EXIF metadata)                      |
 | shutter_speed     | real    | yes       | Image shutter speed (extracted from EXIF metadata)                    |
 | capture_date      | integer | yes       | Image capture date epoch format (extracted from EXIF metadata)        |
 | iso               | integer | yes       | Image ISO (extracted from EXIF metadata)                              |
 | raw_metadata      | text    | yes       | The raw image metadata in JSON format from `ImageMetadata` java class |
 | image_preview     | blob    | yes       | JPEG preview binary blob                                              |
+
+##### Camera Table
+
+ | Name         | Type    | Nullable? | Remarks                                           |
+|--------------|---------|-----------|---------------------------------------------------|
+| id           | text    | no        | primary key                                       |
+| brand        | text    | no        | Camera brand (extracted from EXIF metadata)       |
+| model        | text    | yes       | Camera model (extracted from EXIF metadata)       |
+| is_autofocus | numeric | yes       | Is camera auto-focus? (inferred from brand/model) |
+
+##### Lens Table
+
+| Name         | Type    | Nullable? | Remarks                                   |
+|--------------|---------|-----------|-------------------------------------------|
+| id           | text    | no        | primary key                               |
+| brand        | text    | no        | Lens brand (extracted from EXIF metadata) |
+| model        | text    | yes       | Lens model (extracted from EXIF metadata) |
 
 ### JSON as Datastore Format
 For this application, the use case for object persistence is for saving/reading image metadata to/from a SQLite3 database (in `raw_metadata` field) as reading the metadata from the RAW file itself is very expensive and poses a lot overhead (like having to use JavaFx classes which are relatively heavyweight).  It is much more efficient to read this from a database and then deserialize.  This is the strategy that we employ here: the metadata is serialized into JSON like this before written into database.  Here is an example of the `ImageMetadata` instance when serialized to JSON (prior to persisting to database):
