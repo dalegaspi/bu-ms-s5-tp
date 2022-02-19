@@ -33,7 +33,7 @@
         </MenuBar>
     </top>
     <center>
-        <SplitPane stylesheets="@../css/remove-borders.css" dividerPositions="0.75" orientation="VERTICAL"
+        <SplitPane fx:id="mainSplitViewContainer" stylesheets="@../css/remove-borders.css" dividerPositions="0.75" orientation="VERTICAL"
                    prefWidth="400.0"
                    BorderPane.alignment="CENTER">
             <items>
@@ -58,20 +58,6 @@
                                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                             </padding>
                             <HBox spacing="10.0">
-
-                                <!--
-                                <JFXBadge fx:id="badge1" position="TOP_RIGHT" text="1023"
-                                          stylesheets="@../css/material-design.css" styleClass="icons-badge">
-                                    <StackPane style="-fx-padding: 10;">
-                                        <ImageView fitWidth="80" pickOnBounds="true" preserveRatio="true">
-
-                                            <Image url="https://www.subtleimages.com/s/tp01/images/gallery/i.jpg">
-                                            </Image>
-
-                                        </ImageView>
-                                    </StackPane>
-                                </JFXBadge>
-                                -->
 
                                 <JFXButton stylesheets="@../css/material-design.css"
                                            styleClass="custom-jfx-button-raised" text="Previous">
@@ -116,7 +102,7 @@
                     </items>
                 </SplitPane>
 
-                <VBox fx:id="mainViewContainer" alignment="TOP_CENTER" prefHeight="600.0" prefWidth="800.0"
+                <VBox fx:id="mainGridViewContainer" alignment="TOP_CENTER" prefHeight="600.0" prefWidth="800.0"
                       style="-fx-box-border: transparent; -fx-background-color: lightgray">
                     <ScrollPane fitToWidth="true" style="-fx-background-color: lightgray"
                                 stylesheets="@../css/scroll-bar.css">
@@ -141,6 +127,11 @@
                 <BorderPane.margin>
                     <Insets/>
                 </BorderPane.margin>
+                <JFXToggleButton size="8" alignment="CENTER_LEFT" fx:id="toggleGridView" prefWidth="170.0"
+                                 selected="true" styleClass="orange" stylesheets="@../css/toggle-switch.css"
+                                 text="Grid View">
+
+                </JFXToggleButton>
                 <JFXToggleButton size="8" alignment="CENTER_LEFT" fx:id="toggleShowExif" prefWidth="170.0"
                                  selected="true" styleClass="orange" stylesheets="@../css/toggle-switch.css"
                                  text="Show EXIF">

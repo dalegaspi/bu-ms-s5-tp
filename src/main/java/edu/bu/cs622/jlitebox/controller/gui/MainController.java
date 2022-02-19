@@ -62,7 +62,7 @@ import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
  */
 public class MainController implements Initializable {
     private static Logger logger = LoggerFactory.getLogger(MainController.class);
-    public JFXChipView filterStrings;
+
 
     private ImageCatalog catalog;
     private AboutController aboutController;
@@ -83,6 +83,15 @@ public class MainController implements Initializable {
     public void setInjector(Injector injector) {
         this.injector = injector;
     }
+
+    @FXML
+    private JFXChipView filterStrings;
+
+    @FXML
+    private SplitPane mainSplitViewContainer;
+
+    @FXML
+    private JFXToggleButton toggleGridView;
 
     @FXML
     private Slider previewSizeSlider;
@@ -106,7 +115,7 @@ public class MainController implements Initializable {
     private BorderPane mainViewPane;
 
     @FXML
-    private VBox mainViewContainer;
+    private VBox mainGridViewContainer;
 
     @FXML
     protected void handleFileExitAction(ActionEvent event) {
@@ -467,6 +476,21 @@ public class MainController implements Initializable {
         updateStatusBarText(statusBarDefaultText);
     }
 
+    private void toggleMainView(boolean isGrid) {
+        Platform.runLater(() -> {
+            if (isGrid) {
+                logger.info("Switching to grid view.");
+                mainViewPane.setCenter(mainGridViewContainer);
+            } else {
+                logger.info("Switching to split view.");
+
+                mainSplitViewContainer.getItems().remove(1);
+                mainSplitViewContainer.getItems().add(mainGridViewContainer);
+                mainViewPane.setCenter(mainSplitViewContainer);
+            }
+        });
+    }
+
     private void initializeToggleHandlers() {
         toggleShowExif.selectedProperty().addListener((observable, oldValue, newValue) -> {
             showMetadata = observable.getValue();
@@ -478,6 +502,12 @@ public class MainController implements Initializable {
             exifOnHover = observable.getValue();
             menuToggleExifMetaHover.setSelected(exifOnHover);
             initializeImageCollectionView(false);
+        });
+
+        toggleGridView.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue != newValue) {
+                toggleMainView(newValue);
+            }
         });
     }
 
@@ -509,6 +539,7 @@ public class MainController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         logger.info("Initialization...");
 
+        mainViewPane.setCenter(mainGridViewContainer);
         images = catalog.getImages();
         initializeImageCollectionView(false);
         initializeToggleHandlers();
