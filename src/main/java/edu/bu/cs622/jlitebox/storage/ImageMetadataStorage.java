@@ -47,4 +47,9 @@ public interface ImageMetadataStorage {
      * @return the image name list
      */
     List<String> getImageNames() throws ImageOperationException;
+
+    /**
+     * Initialization
+     */
+    void initialize();
 }

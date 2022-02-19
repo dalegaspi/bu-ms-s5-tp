@@ -165,7 +165,7 @@
                 </JFXSlider>
 
                 <Label text="Filters"/>
-                <JFXChipView stylesheets="@../css/remove-borders.css">
+                <JFXChipView fx:id="filterStrings" stylesheets="@../css/remove-borders.css">
                 </JFXChipView>
             </ToolBar>
         </Pane>

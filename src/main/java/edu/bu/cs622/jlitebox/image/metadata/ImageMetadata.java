@@ -11,6 +11,7 @@ import edu.bu.cs622.jlitebox.utils.AppUtils;
 import io.vavr.control.Try;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -155,9 +156,17 @@ public final class ImageMetadata implements Serializable {
         return iso;
     }
 
+    private DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.DEFAULT);
+
+    private String getFormattedDate() {
+        return dateFormat.format(getCaptureDate());
+    }
+
     @JsonIgnore
     public String getStringForLabelDisplay() {
-        return String.format("Aperture: f/%.1f\nShutter Speed: 1/%ds\nCamera: %s\nLens: %s",
+        return
+                String.format("%s\nf/%.1f 1/%ds\n%s\n%s",
+                        getFormattedDate(),
                         getAperture(),
                         (int) getShutterSpeed(),
                         getCamera().map(Camera::toString).orElse("None"),

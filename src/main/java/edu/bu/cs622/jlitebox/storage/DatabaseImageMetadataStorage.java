@@ -14,12 +14,15 @@ import edu.bu.cs622.jlitebox.image.RawImage;
 import edu.bu.cs622.jlitebox.image.metadata.ImageMetadata;
 import edu.bu.cs622.jlitebox.image.preview.ImagePreviewGenerator;
 import io.vavr.control.Try;
+import org.apache.ibatis.jdbc.ScriptRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -47,6 +50,7 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
         this.previewGenerator = previewGenerator;
         logger.info("Connecting to {}", config.getDatabaseUrl());
         this.conn = DriverManager.getConnection(config.getDatabaseUrl());
+        initialize();
     }
 
     private String toJson(ImageMetadata metadata) {
@@ -271,5 +275,12 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
 
         logger.info("There are {} images in the database", names.size());
         return names;
+    }
+
+    @Override
+    public void initialize() {
+        logger.info("Initializing database...");
+        ScriptRunner sr = new ScriptRunner(conn);
+        sr.runScript(new InputStreamReader(getClass().getResourceAsStream("/db/jlitebox-tables.sql")));
     }
 }

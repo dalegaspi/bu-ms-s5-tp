@@ -2,7 +2,10 @@ package edu.bu.cs622.jlitebox.filter;
 
 import edu.bu.cs622.jlitebox.image.Image;
 import edu.bu.cs622.jlitebox.image.ImageCatalog;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -27,6 +30,26 @@ public final class ImageContentFilter implements ContentFilter<Image> {
     private final Optional<Float> focalLength;
     private final Optional<Integer> iso;
     private final Optional<Float> shutterSpeed;
+
+    /**
+     * A simple filter creator based on a string list
+     *
+     * @param stringList the string list
+     * @return the filter
+     */
+    public static ImageContentFilter fromFilterStringList(List<String> stringList) {
+        var builder = new ImageContentFilterBuilder(true);
+
+        stringList.forEach(f -> {
+            if (f.length() == 3) {
+                builder.withFileExt(f);
+            } else {
+                builder.withName(f);
+            }
+        });
+
+        return builder.build();
+    }
 
     /**
      * Builder for the ImageContentFilter
@@ -137,6 +160,10 @@ public final class ImageContentFilter implements ContentFilter<Image> {
         return this.operator == ImageCatalog.LogicalOperator.AND;
     }
 
+    public static boolean startsWithIgnoreCase(@NonNull String s1, @NonNull CharSequence s2) {
+       return s1.toLowerCase().startsWith(s2.toString().toLowerCase());
+    }
+
     @Override
     public boolean test(Image image) {
         // the idea here is that image metadata is tested against the filter where the
@@ -147,13 +174,13 @@ public final class ImageContentFilter implements ContentFilter<Image> {
         // matching of fields; we are using lambdas here to be more explicit
         // what fields we are matching and to avoid repetition of code
         // in the next section; also for readability
-        Function<CharSequence, Boolean> nameMatch = v -> image.getName().contains(v);
-        Function<CharSequence, Boolean> fileExtMatch = v -> image.getFilename().contains(v);
+        Function<CharSequence, Boolean> nameMatch = v -> startsWithIgnoreCase(image.getName(), v);
+        Function<CharSequence, Boolean> fileExtMatch = v -> startsWithIgnoreCase(image.getType(), v);
         Function<CharSequence, Boolean> cameraMatch = v -> meta.getCamera()
-                        .map(c -> c.getBrand().contains(v))
+                        .map(c -> startsWithIgnoreCase(c.getBrand(), v))
                         .orElse(false);
         Function<CharSequence, Boolean> lensMatch = v -> meta.getLens()
-                        .map(l -> l.getBrand().contains(v))
+                        .map(l -> startsWithIgnoreCase(l.getBrand(), v))
                         .orElse(false);
         Function<Float, Boolean> focalLengthMatch = v -> meta.getLens()
                         .map(l -> l.getFocalLength() == v)

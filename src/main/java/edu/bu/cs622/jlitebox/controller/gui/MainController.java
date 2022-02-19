@@ -1,9 +1,11 @@
 package edu.bu.cs622.jlitebox.controller.gui;
 
 import com.google.inject.Injector;
+import com.jfoenix.controls.JFXChipView;
 import com.jfoenix.controls.JFXToggleButton;
 import edu.bu.cs622.jlitebox.App;
 import edu.bu.cs622.jlitebox.config.ConfigurationManager;
+import edu.bu.cs622.jlitebox.filter.ImageContentFilter;
 import edu.bu.cs622.jlitebox.image.Image;
 import edu.bu.cs622.jlitebox.image.ImageCatalog;
 import edu.bu.cs622.jlitebox.image.ImageFactory;
@@ -15,6 +17,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -59,6 +62,7 @@ import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
  */
 public class MainController implements Initializable {
     private static Logger logger = LoggerFactory.getLogger(MainController.class);
+    public JFXChipView filterStrings;
 
     private ImageCatalog catalog;
     private AboutController aboutController;
@@ -485,6 +489,16 @@ public class MainController implements Initializable {
             }
         });
     }
+
+    @SuppressWarnings("unchecked")
+    private void initializeFilterTextBox() {
+        this.filterStrings.getChips().addListener((ListChangeListener) change -> {
+            logger.info("Current filters: {}", filterStrings.getChips());
+
+            this.images = catalog.getImages(ImageContentFilter.fromFilterStringList(filterStrings.getChips()));
+            initializeImageCollectionView(false);
+        });
+    }
     /**
      * initialization of the component wired to this controller
      *
@@ -499,5 +513,6 @@ public class MainController implements Initializable {
         initializeImageCollectionView(false);
         initializeToggleHandlers();
         initializePreviewSizeSlider();
+        initializeFilterTextBox();
     }
 }
