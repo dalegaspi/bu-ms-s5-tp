@@ -56,7 +56,7 @@ public class SqliteWithBlobTests extends ApplicationTest {
                     throws SQLException, ImageImportException, IOException {
         byte[] writeBytes = previewGenerator.convertPreviewToByteArray(preview);
         Assertions.assertTrue(writeBytes.length > 0);
-        var q = "insert into image_metadata(name, src_path, image_type, image_preview) " +
+        var q = "insert into image(name, src_path, image_type, image_preview) " +
                         "values (?, ?, ?, ?) on conflict(name) do update " +
                         "set src_path = excluded.src_path, " +
                         "image_type = excluded.image_type, " +
@@ -68,7 +68,7 @@ public class SqliteWithBlobTests extends ApplicationTest {
         pstmt.setBytes(4, writeBytes);
         pstmt.execute();
 
-        var q2 = "select image_preview from image_metadata where name = ?";
+        var q2 = "select image_preview from image where name = ?";
         var pstmt2 = conn.prepareStatement(q2);
         pstmt2.setString(1, image.getName());
         var rs = pstmt2.executeQuery();

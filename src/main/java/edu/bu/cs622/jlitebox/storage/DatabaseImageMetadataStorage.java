@@ -59,24 +59,31 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
 
     // this is the "upsert" statement; if the image name already exists in the
     // database, we just update the metadata hence the ON CONFLICT(name) clause
-    static final String UPSERT_PSTATEMENT = "insert into image_metadata(name, src_path, image_type, camera_brand, " +
-                    "camera_model, camera_autofocus," +
-                    "lens_brand, lens_model, lens_focal_length, shutter_speed, " +
+    static final String UPSERT_PSTATEMENT_IMAGE = "insert into image(name, src_path, image_type, " +
+                    "camera_id, lens_id, lens_focal_length, shutter_speed, " +
                     "capture_date, iso, image_preview, raw_metadata) " +
-                    "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict(name) do update " +
+                    "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict(name) do update " +
                     "set src_path = excluded.src_path, " +
                     "image_type = excluded.image_type, " +
-                    "camera_brand = excluded.camera_brand, " +
-                    "camera_model = excluded.camera_model, " +
-                    "camera_autofocus = excluded.camera_autofocus, " +
-                    "lens_brand = excluded.lens_brand, " +
-                    "lens_model = excluded.lens_model, " +
+                    "camera_id = excluded.camera_id, " +
+                    "lens_id = excluded.lens_id, " +
                     "lens_focal_length = excluded.lens_focal_length, " +
                     "shutter_speed = excluded.shutter_speed, " +
                     "capture_date = excluded.capture_date, " +
                     "iso = excluded.iso, " +
                     "image_preview = excluded.image_preview, " +
                     "raw_metadata = excluded.raw_metadata";
+
+    // camera
+    static final String UPSERT_PSTATEMENT_CAMERA = "insert into camera(id, brand, model, is_autofocus) " +
+                    "values (?, ?, ?, ?) on conflict (id) do update " +
+                    "set brand = excluded.brand, model = excluded.model, is_autofocus = excluded.is_autofocus";
+
+    // lens - note that focal length is NOT on the lens because it could be a zoom
+    // lens
+    static final String UPSERT_PSTATEMENT_LENS = "insert into lens(id, brand, model) " +
+                    "values (?, ?, ?) on conflict (id) do update " +
+                    "set brand = excluded.brand, model = excluded.model";
 
     /**
      * save to database
@@ -87,28 +94,57 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
      * @return return false if failed
      */
     private boolean saveToDatabase(Image image, byte[] previewBytes, String jsonMetadata) {
-        try (var pstmt = conn.prepareStatement(UPSERT_PSTATEMENT)) {
-            var meta = image.getMetadata();
+        var meta = image.getMetadata();
+
+        // save the image
+        try (var pstmt = conn.prepareStatement(UPSERT_PSTATEMENT_IMAGE)) {
             pstmt.setString(1, image.getName());
             pstmt.setString(2, image.getOriginalSrcPath());
             pstmt.setString(3, image.getType());
-            pstmt.setString(4, meta.getCamera().map(Camera::getBrand).orElse(null));
-            pstmt.setString(5, meta.getCamera().map(Camera::getModel).orElse(null));
-            pstmt.setInt(6, meta.getCamera().map(c -> c.isAutofocus() ? 1 : 0).orElse(0));
-            pstmt.setString(7, meta.getLens().map(Lens::getBrand).orElse(null));
-            pstmt.setString(8, meta.getLens().map(Lens::getModel).orElse(null));
-            pstmt.setFloat(9, meta.getLens().map(Lens::getFocalLength).orElse((float) 0));
-            pstmt.setFloat(10, meta.getShutterSpeed());
-            pstmt.setInt(11, meta.getCaptureDate() != null ? (int) meta.getCaptureDate().getTime()
+            pstmt.setString(4, meta.getCamera().map(Camera::getId).orElse(null));
+            pstmt.setString(5, meta.getLens().map(Lens::getId).orElse(null));
+            pstmt.setFloat(6, meta.getLens().map(Lens::getFocalLength).orElse((float) 0));
+            pstmt.setFloat(7, meta.getShutterSpeed());
+            pstmt.setInt(8, meta.getCaptureDate() != null ? (int) meta.getCaptureDate().getTime()
                             : (int) (new Date()).getTime());
-            pstmt.setInt(12, meta.getIso());
-            pstmt.setBytes(13, previewBytes);
-            pstmt.setString(14, jsonMetadata);
-            logger.info("{} metadata and preview successfully saved to database", image.getName());
+            pstmt.setInt(9, meta.getIso());
+            pstmt.setBytes(10, previewBytes);
+            pstmt.setString(11, jsonMetadata);
             pstmt.execute();
+            logger.info("{} metadata and preview successfully saved to database", image.getName());
+
         } catch (SQLException e) {
-            logger.error("Error in saving metadata for {}: {}", image.getName(), e.getMessage(), e);
+            logger.error("Error in saving image metadata for {}: {}", image.getName(), e.getMessage(), e);
         }
+
+        // camera
+        var camera = meta.getCamera();
+        camera.ifPresent(c -> {
+            try (var pstmt = conn.prepareStatement(UPSERT_PSTATEMENT_CAMERA)) {
+                pstmt.setString(1, c.getId());
+                pstmt.setString(2, c.getBrand());
+                pstmt.setString(3, c.getModel());
+                pstmt.setInt(4, c.isAutofocus() ? 1 : 0);
+                pstmt.execute();
+                logger.info("{} camera info successfully saved to database", image.getName());
+            } catch (SQLException e) {
+                logger.error("Error in saving camera metadata for {}: {}", image.getName(), e.getMessage(), e);
+            }
+        });
+
+        // lens
+        var lens = meta.getLens();
+        lens.ifPresent(l -> {
+            try (var pstmt = conn.prepareStatement(UPSERT_PSTATEMENT_LENS)) {
+                pstmt.setString(1, l.getId());
+                pstmt.setString(2, l.getBrand());
+                pstmt.setString(3, l.getModel());
+                pstmt.execute();
+                logger.info("{} lens info successfully saved to database", image.getName());
+            } catch (SQLException e) {
+                logger.error("Error in saving lens metadata for {}: {}", image.getName(), e.getMessage(), e);
+            }
+        });
 
         return true;
     }
@@ -159,7 +195,7 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
         }
     }
 
-    static final String QUERY_ONE_IMAGE_PSTATEMENT = "select src_path, image_type, raw_metadata, image_preview from image_metadata where name = ?";
+    static final String QUERY_ONE_IMAGE_PSTATEMENT = "select src_path, image_type, raw_metadata, image_preview from image where name = ?";
 
     /**
      * Load from the database. Returns the Image with (partial) metadata along with
@@ -218,7 +254,7 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
         return rec;
     }
 
-    static final String QUERY_GET_ALL_NAMES = "select name from image_metadata";
+    static final String QUERY_GET_ALL_NAMES = "select name from image";
 
     @Override
     public List<String> getImageNames() throws ImageOperationException {

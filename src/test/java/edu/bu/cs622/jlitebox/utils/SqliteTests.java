@@ -51,7 +51,7 @@ public class SqliteTests {
      */
     @Test
     public void testConnectAndQuery() throws SQLException, IOException {
-        var q = "select raw_metadata from image_metadata";
+        var q = "select raw_metadata from image";
         var s = conn.createStatement();
         var rs = s.executeQuery(q);
 
@@ -81,7 +81,7 @@ public class SqliteTests {
 
         ObjectMapper mapper = new ObjectMapper();
         var meta = new ImageMetadata(Map.of());
-        var q = "insert into image_metadata(name, src_path, image_type, raw_metadata) " +
+        var q = "insert into image(name, src_path, image_type, raw_metadata) " +
                         "values (?, ?, ?, ?) on conflict(name) do update " +
                         "set src_path = excluded.src_path, " +
                         "image_type = excluded.image_type, " +
@@ -106,7 +106,7 @@ public class SqliteTests {
     public void testConnectAndInsertJsonSimple() throws SQLException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         var meta = new ImageMetadata(Map.of());
-        var q = "insert into image_metadata(name, src_path, image_type, raw_metadata) " +
+        var q = "insert into image(name, src_path, image_type, raw_metadata) " +
                         "values (?, ?, ?, ?) on conflict(name) do update " +
                         "set src_path = excluded.src_path, " +
                         "image_type = excluded.image_type, " +
