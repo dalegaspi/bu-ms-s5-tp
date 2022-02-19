@@ -1,5 +1,6 @@
 package edu.bu.cs622.jlitebox.filter;
 
+import com.google.common.base.Splitter;
 import edu.bu.cs622.jlitebox.image.Image;
 import edu.bu.cs622.jlitebox.image.ImageCatalog;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -8,6 +9,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
+
+import static edu.bu.cs622.jlitebox.image.ImageCatalog.LogicalOperator.AND;
+import static edu.bu.cs622.jlitebox.image.ImageCatalog.LogicalOperator.OR;
 
 /**
  * Image content filter for filtering images. Uses builder pattern.
@@ -31,6 +36,12 @@ public final class ImageContentFilter implements ContentFilter<Image> {
     private final Optional<Integer> iso;
     private final Optional<Float> shutterSpeed;
 
+    private static String getFilterValue(@NonNull String filter) {
+        assert filter.contains(":");
+
+        return Splitter.on(":").splitToList(filter).get(1).trim();
+    }
+
     /**
      * A simple filter creator based on a string list
      *
@@ -38,12 +49,34 @@ public final class ImageContentFilter implements ContentFilter<Image> {
      * @return the filter
      */
     public static ImageContentFilter fromFilterStringList(List<String> stringList) {
-        var builder = new ImageContentFilterBuilder(true);
+        ImageContentFilter.ImageContentFilterBuilder builder;
+
+        Predicate<String> isOrOperator = s -> s.equalsIgnoreCase(OR.name());
+        Predicate<String> isAndOperator = s -> s.equalsIgnoreCase(AND.name());
+        Predicate<String> isOperator = s -> isOrOperator.test(s) || isAndOperator.test(s);
+
+        // determine the operator if it exists in the filter list
+        var operator = stringList.stream().filter(isOperator).findFirst();
+        if (operator.isPresent()) {
+            builder = new ImageContentFilterBuilder(operator.get().equalsIgnoreCase(AND.name()));
+        } else {
+            builder = new ImageContentFilterBuilder(true);
+        }
 
         stringList.forEach(f -> {
-            if (f.length() == 3) {
+            if (startsWithIgnoreCase(f, "type:")) {
+                builder.withFileExt(getFilterValue(f));
+            } else if (startsWithIgnoreCase(f, "name:")) {
+                builder.withName(getFilterValue(f));
+            } else if (startsWithIgnoreCase(f, "camera:")) {
+                builder.withCameraName(getFilterValue(f));
+            } else if (startsWithIgnoreCase(f, "lens:")) {
+                builder.withLensName(getFilterValue(f));
+            } else if (f.length() == 3) {
+                // probably by type
                 builder.withFileExt(f);
             } else {
+                // probably by name
                 builder.withName(f);
             }
         });
@@ -145,7 +178,7 @@ public final class ImageContentFilter implements ContentFilter<Image> {
                     float aperture,
                     float focalLength,
                     int iso, float shutterSpeed) {
-        this.operator = isAnd ? ImageCatalog.LogicalOperator.AND : ImageCatalog.LogicalOperator.OR;
+        this.operator = isAnd ? ImageCatalog.LogicalOperator.AND : OR;
         this.name = Optional.ofNullable(name);
         this.fileExt = Optional.ofNullable(fileExt);
         this.cameraName = Optional.ofNullable(cameraName);
@@ -161,7 +194,7 @@ public final class ImageContentFilter implements ContentFilter<Image> {
     }
 
     public static boolean startsWithIgnoreCase(@NonNull String s1, @NonNull CharSequence s2) {
-       return s1.toLowerCase().startsWith(s2.toString().toLowerCase());
+        return s1.toLowerCase().startsWith(s2.toString().toLowerCase());
     }
 
     @Override

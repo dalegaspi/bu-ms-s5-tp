@@ -283,4 +283,9 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
         ScriptRunner sr = new ScriptRunner(conn);
         sr.runScript(new InputStreamReader(getClass().getResourceAsStream("/db/jlitebox-tables.sql")));
     }
+
+    @Override
+    public Map<String, String> getStatistics() {
+        return Map.of();
+    }
 }

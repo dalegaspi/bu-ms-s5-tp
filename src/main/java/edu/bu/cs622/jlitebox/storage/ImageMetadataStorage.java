@@ -6,7 +6,9 @@ import edu.bu.cs622.jlitebox.image.Image;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Image metadata storage (database)
@@ -52,4 +54,22 @@ public interface ImageMetadataStorage {
      * Initialization
      */
     void initialize();
+
+    /**
+     * statistics
+     *
+     * @return
+     */
+    Map<String, String> getStatistics();
+
+    /**
+     * Return statistics formatted for display
+     *
+     * @return formatted statistics
+     */
+    default String getFormattedStatistics() {
+        return getStatistics().entrySet().stream()
+                        .map(e -> String.format("%s: %s", e.getKey(), e.getValue()))
+                        .collect(Collectors.joining("\n"));
+    }
 }
