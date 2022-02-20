@@ -19,6 +19,7 @@ onKeyPressed="#handleOnKeyPressed">
             <Menu text="File">
                 <MenuItem onAction="#handleAboutDialog" text="About..."/>
                 <MenuItem onAction="#handleFileImportAction" text="Import Images..."/>
+                <MenuItem onAction="#handleExportCatalog" text="Export Catalog as JSON..."/>
                 <SeparatorMenuItem/>
                 <MenuItem onAction="#handleFileExitAction" text="Exit"/>
             </Menu>

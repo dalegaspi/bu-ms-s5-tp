@@ -1,5 +1,6 @@
 package edu.bu.cs622.jlitebox.controller.gui;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Injector;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXChipView;
@@ -40,6 +41,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -443,26 +445,68 @@ public class MainController implements Initializable {
 
     public void handleOnKeyPressed(KeyEvent keyEvent) {
         switch (keyEvent.getCode()) {
-            case LEFT:
-                logger.info("Left key pressed");
-                if (!toggleGridView.isSelected()) {
-                    navPrevButton.fire();
-                    keyEvent.consume();
-                }
-                break;
-
-            case RIGHT:
-                logger.info("Right key pressed");
-                if (!toggleGridView.isSelected()) {
-                    navNextButton.fire();
-                    keyEvent.consume();
-                }
-                break;
-                
-            case SPACE:
-                logger.info("Spacebar pressed");
-                toggleGridView.fire();
+        case LEFT:
+            logger.info("Left key pressed");
+            if (!toggleGridView.isSelected()) {
+                navPrevButton.fire();
                 keyEvent.consume();
+            }
+            break;
+
+        case RIGHT:
+            logger.info("Right key pressed");
+            if (!toggleGridView.isSelected()) {
+                navNextButton.fire();
+                keyEvent.consume();
+            }
+            break;
+
+        case SPACE:
+            logger.info("Spacebar pressed");
+            toggleGridView.fire();
+            keyEvent.consume();
+        }
+    }
+
+    public void handleExportCatalog(ActionEvent event) {
+        logger.info("Export catalog...");
+        FileChooser exportFileChooser = new FileChooser();
+        exportFileChooser.setTitle("Export Catalog");
+        exportFileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON files", "*.json"));
+        var selectedFile = exportFileChooser
+                        .showSaveDialog(((MenuItem) event.getTarget()).getParentPopup().getOwnerWindow());
+
+        if (selectedFile != null) {
+            logger.info("Exporting to {}", selectedFile);
+
+            CompletableFuture.supplyAsync(() -> {
+                Platform.runLater(() -> statusBar.setText(String.format("Exporting catalog to %s...", selectedFile)));
+
+                return Try.run(() -> {
+                    var objectMapper = new ObjectMapper();
+                    catalog.getMetadataStorage().getAllAsList();
+                    objectMapper.writerWithDefaultPrettyPrinter().writeValue(selectedFile, images);
+                });
+            }).thenAccept(t -> {
+                Platform.runLater(() -> {
+                    if (t.isSuccess()) {
+                        Notifications.create()
+                                        .title("JLiteBox Export Catalog")
+                                        .text(String.format("Export to [%s] completed.",
+                                                        selectedFile.getPath()))
+                                        .showInformation();
+                    } else {
+                        Notifications.create()
+                                        .title("JLiteBox Export Catalog")
+                                        .text(String.format("Export to [%s] failed due to [%s].",
+                                                        selectedFile.getPath(), t.getCause().getMessage()))
+                                        .showError();
+                    }
+
+                    statusBar.setText(statusBarDefaultText);
+                });
+            });
+
         }
     }
 
@@ -614,14 +658,15 @@ public class MainController implements Initializable {
 
             Platform.runLater(() -> {
                 theCurrentImageLabel.setText(
-                        String.format("%s\n%s", current.getName(), current.getMetadata().getStringForLabelDisplay()));
+                                String.format("%s\n%s", current.getName(),
+                                                current.getMetadata().getStringForLabelDisplay()));
             });
         }).thenRun(() -> {
-           Platform.runLater(() -> {
-               navSpinner.setVisible(false);
-               navPrevButton.setDisable(false);
-               navNextButton.setDisable(false);
-           });
+            Platform.runLater(() -> {
+                navSpinner.setVisible(false);
+                navPrevButton.setDisable(false);
+                navNextButton.setDisable(false);
+            });
         });
     }
 
@@ -684,7 +729,5 @@ public class MainController implements Initializable {
         initializePreviewSizeSlider();
         initializeFilterTextBox();
         initializeCatalogStatistics();
-
-        var lst = Try.of(() -> catalog.getMetadataStorage().getAllAsList());
     }
 }

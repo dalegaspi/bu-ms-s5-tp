@@ -138,17 +138,19 @@ public class BasicImageCatalog implements ImageCatalog {
                                             .onSuccess(t -> {
                                                 if (importCallback != null) {
                                                     importCallback.apply(i, "preview generated",
-                                                            previewGenerated.incrementAndGet(), newImages.size());
+                                                                    previewGenerated.incrementAndGet(),
+                                                                    newImages.size());
                                                 }
                                             })
                                             .onFailure(t -> logger.warn("Failed to generate preview for {}",
                                                             i.getName())),
                                             threadPool)
-                            .thenApplyAsync(ti -> ti.mapTry(metadataExtractor::parse)
+                            .thenApplyAsync(ti -> ti.mapTry(image -> metadataExtractor.parse(image))
                                             .onSuccess(t -> {
                                                 if (importCallback != null) {
                                                     importCallback.apply(i, "metadata extracted",
-                                                            metadataExtracted.incrementAndGet(), newImages.size());
+                                                                    metadataExtracted.incrementAndGet(),
+                                                                    newImages.size());
                                                 }
                                             })
                                             .onFailure(t -> logger.warn("Failed to extract metadata for {}",
