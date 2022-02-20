@@ -4,7 +4,6 @@ import com.google.inject.Injector;
 import com.jfoenix.controls.JFXChipView;
 import com.jfoenix.controls.JFXToggleButton;
 import edu.bu.cs622.jlitebox.App;
-import edu.bu.cs622.jlitebox.config.ConfigurationManager;
 import edu.bu.cs622.jlitebox.filter.ImageContentFilter;
 import edu.bu.cs622.jlitebox.image.Image;
 import edu.bu.cs622.jlitebox.image.ImageCatalog;
@@ -13,6 +12,7 @@ import edu.bu.cs622.jlitebox.image.metadata.ImageMetadata;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Try;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -40,7 +40,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.StatusBar;
-import org.controlsfx.control.ToggleSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +49,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 
@@ -62,7 +60,6 @@ import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
  */
 public class MainController implements Initializable {
     private static Logger logger = LoggerFactory.getLogger(MainController.class);
-
 
     private ImageCatalog catalog;
     private AboutController aboutController;
@@ -84,8 +81,19 @@ public class MainController implements Initializable {
         this.injector = injector;
     }
 
+    private int theCurrentImageIndex = 0;
+
     @FXML
-    private JFXChipView filterStrings;
+    private Label catalogStatistics;
+
+    @FXML
+    private Label theCurrentImageLabel;
+
+    @FXML
+    private ImageView theCurrentImage;
+
+    @FXML
+    private JFXChipView<String> filterStrings;
 
     @FXML
     private SplitPane mainSplitViewContainer;
@@ -187,9 +195,10 @@ public class MainController implements Initializable {
                                 statusBar.setText(statusBarDefaultText);
 
                                 Notifications.create()
-                                        .title("JLiteBox Import Directory")
-                                        .text(String.format("Import from directory [%s] completed.", selectedDirectory.getPath()))
-                                        .showInformation();
+                                                .title("JLiteBox Import Directory")
+                                                .text(String.format("Import from directory [%s] completed.",
+                                                                selectedDirectory.getPath()))
+                                                .showInformation();
                             }));
         }
     }
@@ -211,11 +220,11 @@ public class MainController implements Initializable {
                         "-fx-border-style: solid;\n";
 
         String hoverCss = "-fx-border-color: #D9631E;\n" +
-                "-fx-background-radius: 10;\n" +
-                "-fx-background-color: white;\n" +
-                "-fx-border-radius: 10;\n" +
-                "-fx-border-width: 1;\n" +
-                "-fx-border-style: solid;\n";
+                        "-fx-background-radius: 10;\n" +
+                        "-fx-background-color: white;\n" +
+                        "-fx-border-radius: 10;\n" +
+                        "-fx-border-width: 1;\n" +
+                        "-fx-border-style: solid;\n";
 
         vbox.setStyle(normalCss);
 
@@ -273,9 +282,9 @@ public class MainController implements Initializable {
         label.setMinWidth(labelWidth);
         label.setMaxWidth(labelWidth);
         label.setAlignment(showMetadata ? Pos.TOP_LEFT : Pos.TOP_CENTER);
-        label.setFont( Font.font("SF Mono",
-                showMetadata ? FontWeight.NORMAL : FontWeight.BOLD,
-                ImageBox.getPreferredLabelFontSize(showMetadata)));
+        label.setFont(Font.font("SF Mono",
+                        showMetadata ? FontWeight.NORMAL : FontWeight.BOLD,
+                        ImageBox.getPreferredLabelFontSize(showMetadata)));
     }
 
     private Label createImageTitle(Image image, String titleText) {
@@ -289,10 +298,10 @@ public class MainController implements Initializable {
     }
 
     /**
-     * This creates the Image Preview Layer with the Image Type (JPG/RAW)
-     * that appears in the upper left corner
+     * This creates the Image Preview Layer with the Image Type (JPG/RAW) that
+     * appears in the upper left corner
      *
-     * @param image the image
+     * @param image   the image
      * @param preview the preview
      * @return Pane/layer with banner
      */
@@ -349,7 +358,7 @@ public class MainController implements Initializable {
         logger.info("Reloading from catalog...");
         updateStatusBarText("Reloading images from catalog...");
         CompletableFuture.runAsync(() -> initializeImageCollectionView(true))
-                .thenRun(() -> updateStatusBarText(statusBarDefaultText));
+                        .thenRun(() -> updateStatusBarText(statusBarDefaultText));
     }
 
     @FXML
@@ -418,41 +427,48 @@ public class MainController implements Initializable {
 
         AtomicInteger loaded = new AtomicInteger(0);
         // convert each image in the catalog into a JavaFx object asynchronously
-        var tasks = images.stream().map(image -> CompletableFuture.supplyAsync(() -> {
-            var preview = Optional.of(image).flatMap(Image::getPreview).orElse(null);
-            var metadata = Optional.of(image).map(Image::getMetadata);
-            var titleText = metadata.map(m -> ImageBox.getLabelText(showMetadata, image, m)).orElse(image.getName());
+        var tasks = images.stream()
+                        .map(image -> CompletableFuture.supplyAsync(() -> {
+                            var preview = Optional.of(image).flatMap(Image::getPreview).orElse(null);
+                            var metadata = Optional.of(image).map(Image::getMetadata);
+                            var titleText = metadata.map(m -> ImageBox.getLabelText(showMetadata, image, m))
+                                            .orElse(image.getName());
 
-            var vbox = createImageVBox(image);
-            Platform.runLater(() -> {
-                logger.info("Constructing VBox for {}...", image.getName());
+                            var vbox = createImageVBox(image);
+                            Platform.runLater(() -> {
+                                logger.info("Constructing VBox for {}...", image.getName());
 
-                var imageTitle = createImageTitle(image, titleText);
-                var imageViewPanes = createImageViewWithBannerPane(image, preview);
-                var imageViewPane = imageViewPanes._1;
-                var imageBannerPane = imageViewPanes._2;
+                                var imageTitle = createImageTitle(image, titleText);
+                                var imageViewPanes = createImageViewWithBannerPane(image, preview);
+                                var imageViewPane = imageViewPanes._1;
+                                var imageBannerPane = imageViewPanes._2;
 
-                logger.info("Adding Image and Text of {} to its Vbox...", image.getName());
-                imageBoxGrid.put(image.getName(),
-                                new ImageBox(image,
-                                        metadata.orElse(new ImageMetadata(Map.of())),
-                                        vbox,
-                                        imageViewPane,
-                                        imageTitle,
-                                        imageBannerPane));
-                vbox.getChildren().addAll(imageViewPane, imageTitle);
-                updateStatusBarText(String.format("Image %d of %d loaded.", loaded.incrementAndGet(), images.size()));
-            });
+                                logger.info("Adding Image and Text of {} to its Vbox...", image.getName());
+                                imageBoxGrid.put(image.getName(),
+                                                new ImageBox(image,
+                                                                metadata.orElse(new ImageMetadata(Map.of())),
+                                                                vbox,
+                                                                imageViewPane,
+                                                                imageTitle,
+                                                                imageBannerPane));
+                                vbox.getChildren().addAll(imageViewPane, imageTitle);
+                                updateStatusBarText(String.format("Image %d of %d loaded.", loaded.incrementAndGet(),
+                                                images.size()));
+                            });
 
-            return vbox;
-        }).thenApply(vb -> {
-            logger.info("Add Image vbox for {} to grid...", image.getName());
-            Platform.runLater(() -> {
-                gridContainer.getChildren().add(vb);
-            });
+                            return vbox;
+                        }).thenApply(vb -> {
+                            logger.info("Add Image vbox for {} to grid...", image.getName());
+                            Platform.runLater(() -> {
+                                gridContainer.getChildren().add(vb);
+                                FadeTransition ft = new FadeTransition(Duration.millis(1500), vb);
+                                ft.setFromValue(0.0);
+                                ft.setToValue(1.0);
+                                ft.play();
+                            });
 
-            return vb;
-        })).toArray(CompletableFuture[]::new);
+                            return vb;
+                        })).toArray(CompletableFuture[]::new);
 
         CompletableFuture.allOf(tasks).thenRun(() -> {
             Try.run(() -> Thread.sleep(3000));
@@ -484,11 +500,28 @@ public class MainController implements Initializable {
             } else {
                 logger.info("Switching to split view.");
 
+                theCurrentImageIndex = 0;
+                renderTheImageInSplitView();
                 mainSplitViewContainer.getItems().remove(1);
                 mainSplitViewContainer.getItems().add(mainGridViewContainer);
                 mainViewPane.setCenter(mainSplitViewContainer);
             }
         });
+    }
+
+    private void renderTheImageInSplitView() {
+        var imagesAsList = new ArrayList<>(images);
+
+        if (theCurrentImageIndex < 0 || theCurrentImageIndex > images.size() - 1)
+            theCurrentImageIndex = 0;
+
+        var current = imagesAsList.get(theCurrentImageIndex);
+        current.getPreview().ifPresent(p -> {
+            theCurrentImage.setImage(p);
+        });
+
+        theCurrentImageLabel.setText(
+                        String.format("%s\n%s", current.getName(), current.getMetadata().getStringForLabelDisplay()));
     }
 
     private void initializeToggleHandlers() {
@@ -520,15 +553,19 @@ public class MainController implements Initializable {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private void initializeFilterTextBox() {
-        this.filterStrings.getChips().addListener((ListChangeListener) change -> {
+        this.filterStrings.getChips().addListener((ListChangeListener<String>) change -> {
             logger.info("Current filters: {}", filterStrings.getChips());
 
             this.images = catalog.getImages(ImageContentFilter.fromFilterStringList(filterStrings.getChips()));
             initializeImageCollectionView(false);
         });
     }
+
+    private void initializeCatalogStatistics() {
+        this.catalogStatistics.setText(catalog.getMetadataStorage().getFormattedStatistics());
+    }
+
     /**
      * initialization of the component wired to this controller
      *
@@ -545,5 +582,6 @@ public class MainController implements Initializable {
         initializeToggleHandlers();
         initializePreviewSizeSlider();
         initializeFilterTextBox();
+        initializeCatalogStatistics();
     }
 }

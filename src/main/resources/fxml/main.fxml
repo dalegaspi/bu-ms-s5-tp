@@ -43,9 +43,9 @@
                         <ImageViewPane prefWidth="400"
                                        style="-fx-border-color: transparent; -fx-border-style: none; -fx-background-color: darkgray">
                             <imageView>
-                                <ImageView pickOnBounds="true" preserveRatio="true">
+                                <ImageView fx:id="theCurrentImage" pickOnBounds="true" preserveRatio="true">
 
-                                    <Image url="https://www.subtleimages.com/s/tp01/images/gallery/i.jpg">
+                                    <Image  url="https://www.subtleimages.com/s/tp01/images/gallery/i.jpg">
                                     </Image>
 
                                 </ImageView>
@@ -58,7 +58,6 @@
                                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
                             </padding>
                             <HBox spacing="10.0">
-
                                 <JFXButton stylesheets="@../css/material-design.css"
                                            styleClass="custom-jfx-button-raised" text="Previous">
                                     <graphic>
@@ -84,18 +83,8 @@
                             </JFXButton>
 
                             <Separator/>
-                            <Label style="-fx-font-family: 'SF Pro Display'" wrapText="true">
-                                <text>
-                                    proin nibh nisl condimentum id venenatis a condimentum vitae sapien pellentesque
-                                    habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas sed
-                                    tempus urna et pharetra pharetra massa massa ultricies mi quis hendrerit dolor magna
-                                    eget est lorem ipsum dolor sit amet consectetur adipiscing elit pellentesque
-                                    habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas
-                                    integer eget aliquet nibh praesent tristique magna sit amet purus gravida quis
-                                    blandit turpis cursus in hac habitasse platea dictumst quisque sagittis purus sit
-                                    amet volutpat consequat mauris nunc congue nisi vitae suscipit tellus mauris a diam
-                                    maecenas sed enim
-                                </text>
+                            <Label fx:id="theCurrentImageLabel" style="-fx-font-family: 'SF Pro Display'" wrapText="true">
+
                             </Label>
 
                         </VBox>
@@ -158,6 +147,14 @@
                 <Label text="Filters"/>
                 <JFXChipView fx:id="filterStrings" stylesheets="@../css/remove-borders.css">
                 </JFXChipView>
+                <Label text="Catalog Statistics">
+
+                        <padding>
+                            <Insets top="20.0"/>
+                        </padding>
+
+                </Label>
+                <Label alignment="TOP_LEFT" prefHeight="200" fx:id="catalogStatistics" wrapText="true"/>
             </ToolBar>
         </Pane>
     </left>

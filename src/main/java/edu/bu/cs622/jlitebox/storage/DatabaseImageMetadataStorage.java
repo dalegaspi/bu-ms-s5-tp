@@ -1,3 +1,4 @@
+
 package edu.bu.cs622.jlitebox.storage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,6 +16,7 @@ import edu.bu.cs622.jlitebox.image.metadata.ImageMetadata;
 import edu.bu.cs622.jlitebox.image.preview.ImagePreviewGenerator;
 import io.vavr.control.Try;
 import org.apache.ibatis.jdbc.ScriptRunner;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +44,11 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
     private final ImagePreviewGenerator previewGenerator;
 
     Connection conn;
+    ImageCatalogConfiguration config;
+
+    private Connection createConnection() throws SQLException {
+        return DriverManager.getConnection(config.getDatabaseUrl());
+    }
 
     @Inject
     public DatabaseImageMetadataStorage(ImageCatalogConfiguration config, ImagePreviewGenerator previewGenerator)
@@ -49,7 +56,10 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
         this.mapper = new ObjectMapper();
         this.previewGenerator = previewGenerator;
         logger.info("Connecting to {}", config.getDatabaseUrl());
-        this.conn = DriverManager.getConnection(config.getDatabaseUrl());
+
+        this.config = config;
+        this.conn = createConnection();
+
         initialize();
     }
 
@@ -100,27 +110,6 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
     private boolean saveToDatabase(Image image, byte[] previewBytes, String jsonMetadata) {
         var meta = image.getMetadata();
 
-        // save the image
-        try (var pstmt = conn.prepareStatement(UPSERT_PSTATEMENT_IMAGE)) {
-            pstmt.setString(1, image.getName());
-            pstmt.setString(2, image.getOriginalSrcPath());
-            pstmt.setString(3, image.getType());
-            pstmt.setString(4, meta.getCamera().map(Camera::getId).orElse(null));
-            pstmt.setString(5, meta.getLens().map(Lens::getId).orElse(null));
-            pstmt.setFloat(6, meta.getLens().map(Lens::getFocalLength).orElse((float) 0));
-            pstmt.setFloat(7, meta.getShutterSpeed());
-            pstmt.setInt(8, meta.getCaptureDate() != null ? (int) meta.getCaptureDate().getTime()
-                            : (int) (new Date()).getTime());
-            pstmt.setInt(9, meta.getIso());
-            pstmt.setBytes(10, previewBytes);
-            pstmt.setString(11, jsonMetadata);
-            pstmt.execute();
-            logger.info("{} metadata and preview successfully saved to database", image.getName());
-
-        } catch (SQLException e) {
-            logger.error("Error in saving image metadata for {}: {}", image.getName(), e.getMessage(), e);
-        }
-
         // camera
         var camera = meta.getCamera();
         camera.ifPresent(c -> {
@@ -149,6 +138,27 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
                 logger.error("Error in saving lens metadata for {}: {}", image.getName(), e.getMessage(), e);
             }
         });
+
+        // save the image
+        try (var pstmt = conn.prepareStatement(UPSERT_PSTATEMENT_IMAGE)) {
+            pstmt.setString(1, image.getName());
+            pstmt.setString(2, image.getOriginalSrcPath());
+            pstmt.setString(3, image.getType());
+            pstmt.setString(4, meta.getCamera().map(Camera::getId).orElse(null));
+            pstmt.setString(5, meta.getLens().map(Lens::getId).orElse(null));
+            pstmt.setFloat(6, meta.getLens().map(Lens::getFocalLength).orElse((float) 0));
+            pstmt.setFloat(7, meta.getShutterSpeed());
+            pstmt.setLong(8, meta.getCaptureDate() != null ? meta.getCaptureDate().toInstant().toEpochMilli() / 1000
+                            : (new Date()).toInstant().toEpochMilli() / 1000);
+            pstmt.setInt(9, meta.getIso());
+            pstmt.setBytes(10, previewBytes);
+            pstmt.setString(11, jsonMetadata);
+            pstmt.execute();
+            logger.info("{} metadata and preview successfully saved to database", image.getName());
+
+        } catch (SQLException e) {
+            logger.error("Error in saving image metadata for {}: {}", image.getName(), e.getMessage(), e);
+        }
 
         return true;
     }
@@ -258,7 +268,7 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
         return rec;
     }
 
-    static final String QUERY_GET_ALL_NAMES = "select name from image";
+    static final String QUERY_GET_ALL_NAMES = "select name from image order by capture_date";
 
     @Override
     public List<String> getImageNames() throws ImageOperationException {
@@ -282,10 +292,41 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
         logger.info("Initializing database...");
         ScriptRunner sr = new ScriptRunner(conn);
         sr.runScript(new InputStreamReader(getClass().getResourceAsStream("/db/jlitebox-tables.sql")));
+        try {
+            conn.close();
+            this.conn = createConnection();
+        } catch (SQLException e) {
+            logger.error("Error in initialization {}", e.getMessage(), e);
+        }
+    }
+
+    private String getStatsFromQuery(@NonNull String query) {
+        return Try.of(() -> {
+            var s = conn.createStatement();
+            var rs = s.executeQuery(query);
+
+            if (rs.next()) {
+                return rs.getString(1);
+            } else {
+                return "0";
+            }
+
+        }).onFailure(t -> logger.warn("Unable to get stats due to error: {}", t.getMessage(), t))
+                        .getOrElse("-");
     }
 
     @Override
     public Map<String, String> getStatistics() {
-        return Map.of();
+        // we are using LinkedHashMap to maintain order the way they are inserted
+        var map = new LinkedHashMap<String, String>();
+
+        map.put("Images", getStatsFromQuery("select count(*) from image"));
+        map.put("JPEG Images", getStatsFromQuery("select count(*) from image where image_type = 'JPG'"));
+        map.put("RAW Images", getStatsFromQuery("select count(*) from image where image_type <> 'JPG'"));
+        map.put("Cameras", getStatsFromQuery("select count(*) from camera"));
+        map.put("Lenses", getStatsFromQuery("select count(*) from lens"));
+        map.put("Taken with AF cameras",
+                        getStatsFromQuery("select count(*) from image_with_metadata where camera_autofocus = 1"));
+        return map;
     }
 }
