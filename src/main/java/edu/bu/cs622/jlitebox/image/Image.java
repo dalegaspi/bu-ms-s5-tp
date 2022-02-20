@@ -1,5 +1,6 @@
 package edu.bu.cs622.jlitebox.image;
 
+import edu.bu.cs622.jlitebox.App;
 import edu.bu.cs622.jlitebox.image.metadata.ImageMetadata;
 import edu.bu.cs622.jlitebox.utils.AppUtils;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -96,5 +97,14 @@ public abstract class Image {
      */
     public void setPreview(javafx.scene.image.Image preview) {
         this.preview = preview;
+    }
+
+    /**
+     * Get the file name
+     *
+     * @return the filename
+     */
+    public String toFilename() {
+        return AppUtils.getFilename(getOriginalSrcPath());
     }
 }

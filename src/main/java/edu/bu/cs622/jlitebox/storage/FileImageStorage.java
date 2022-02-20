@@ -56,4 +56,11 @@ public final class FileImageStorage implements ImageStorage {
 
         return true;
     }
+
+    @Override
+    public String getRootDirectory() {
+        return rootDir;
+    }
+
+
 }

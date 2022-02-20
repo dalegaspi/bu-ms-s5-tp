@@ -27,6 +27,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.ImageView;
@@ -44,9 +46,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -388,6 +393,17 @@ public class MainController implements Initializable {
             theCurrentImageIndex = 0;
 
         renderTheImageInSplitView();
+    }
+
+    public void handleRevealButton(ActionEvent event) throws IOException {
+        var imagesAsList = new ArrayList<>(images);
+        var image = imagesAsList.get(theCurrentImageIndex);
+        var revealLocation = new File(catalog.getStorage().getRootDirectory(), image.toFilename());
+
+        logger.info("Opening to location {}", revealLocation);
+        if (Desktop.isDesktopSupported()) {
+            Desktop.getDesktop().open(revealLocation);
+        }
     }
 
     static class ImageBox {

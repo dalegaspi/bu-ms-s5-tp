@@ -26,4 +26,11 @@ public interface ImageStorage {
     default boolean save(Image image) throws JLiteBoxException {
         return save(List.of(image));
     }
+
+    /**
+     * The root directory
+     *
+     * @return the root directory
+     */
+    String getRootDirectory();
 }

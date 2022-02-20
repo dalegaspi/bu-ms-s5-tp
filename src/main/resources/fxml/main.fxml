@@ -75,7 +75,7 @@
 
                             </HBox>
                             <JFXButton stylesheets="@../css/material-design.css" styleClass="custom-jfx-button-raised"
-                                       text="Reveal in Filesytem">
+                                       text="Open with Default App" onAction="#handleRevealButton">
                                 <graphic>
                                     <FontIcon iconLiteral="mdi2f-folder-image" iconSize="20"
                                               styleClass="icon"/>
