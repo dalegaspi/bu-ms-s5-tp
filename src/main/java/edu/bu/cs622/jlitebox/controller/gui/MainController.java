@@ -269,6 +269,12 @@ public class MainController implements Initializable {
         });
 
         vbox.setOnMouseClicked(mouseEvent -> {
+            if (mouseEvent.getClickCount() == 2) {
+                // double-clicked; change to split view
+                if (toggleGridView.isSelected())
+                    toggleGridView.fire();
+            }
+
             var imagesList = List.copyOf(images);
             var matchIndex = IntStream.range(0, images.size())
                             .filter(i -> imagesList.get(i).getName().equalsIgnoreCase(image.getName()))
@@ -279,6 +285,7 @@ public class MainController implements Initializable {
                 renderTheImageInSplitView();
             });
         });
+
         return vbox;
     }
 
@@ -554,7 +561,6 @@ public class MainController implements Initializable {
             } else {
                 logger.info("Switching to split view.");
 
-                theCurrentImageIndex = 0;
                 renderTheImageInSplitView();
                 mainSplitViewContainer.getItems().remove(1);
                 mainSplitViewContainer.getItems().add(mainGridViewContainer);
