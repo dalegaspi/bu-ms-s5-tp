@@ -19,6 +19,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -32,6 +33,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -54,6 +56,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 
@@ -257,6 +260,17 @@ public class MainController implements Initializable {
             }
         });
 
+        vbox.setOnMouseClicked(mouseEvent -> {
+            var imagesList = List.copyOf(images);
+            var matchIndex = IntStream.range(0, images.size())
+                    .filter(i -> imagesList.get(i).getName().equalsIgnoreCase(image.getName()))
+                    .findFirst();
+
+            matchIndex.ifPresent(i -> {
+                theCurrentImageIndex = i;
+                renderTheImageInSplitView();
+            });
+        });
         return vbox;
     }
 
@@ -274,12 +288,15 @@ public class MainController implements Initializable {
             imageView.setFitWidth(applyMultiplier(120));
         else
             imageView.setFitWidth(applyMultiplier(80));
+
+        imageView.setSmooth(true);
         imageView.setPreserveRatio(true);
         imageView.setImage(preview);
         // apply a shadow effect.
         var effect = new InnerShadow(5, Color.DARKGRAY);
         effect.setBlurType(BlurType.GAUSSIAN);
         imageView.setEffect(new InnerShadow(5, Color.DARKGRAY));
+
         return imageView;
     }
 
