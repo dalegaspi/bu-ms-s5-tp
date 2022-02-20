@@ -41,15 +41,26 @@ public class LibRawImagePreviewGenerator implements ImagePreviewGenerator {
     }
 
     private Image loadAndResizeImage(edu.bu.cs622.jlitebox.image.Image image) throws ImageImportException {
+        return generatePreview(new File(image.getOriginalSrcPath()), config.getImagePreviewWidth(),
+                        config.getImagePreviewHeight());
+    }
+
+    private Image generatePreview(File fullPath, int width, int height) throws ImageImportException {
         try {
-            var path = new File(image.getOriginalSrcPath()).toURI().toURL().toString();
-            var preview = new Image(path, config.getImagePreviewWidth(), config.getImagePreviewHeight(), true, true);
+            var path = fullPath.toURI().toURL().toString();
+            var preview = new Image(path, width, height, true, true);
             logger.info("Preview generated width: {}, height: {}", preview.getWidth(), preview.getHeight());
 
             return preview;
         } catch (MalformedURLException e) {
             throw new ImageImportException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public Image generatePreviewForDisplay(edu.bu.cs622.jlitebox.image.Image image, int width, int height)
+                    throws ImageImportException {
+        return generatePreview(new File(config.getRootDirectory(), image.toFilename()), width, height);
     }
 
     @Override

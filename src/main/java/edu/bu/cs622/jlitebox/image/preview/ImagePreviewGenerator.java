@@ -19,6 +19,9 @@ public interface ImagePreviewGenerator {
      */
     javafx.scene.image.Image generatePreview(RawImage image) throws ImageImportException;
 
+    Image generatePreviewForDisplay(edu.bu.cs622.jlitebox.image.Image image, int width, int height)
+                    throws ImageImportException;
+
     /**
      * Resize a preview for JPEG images because technically you don't generate one
      * because an image preview is already a JPEG.

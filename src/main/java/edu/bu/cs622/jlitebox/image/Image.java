@@ -1,8 +1,11 @@
 package edu.bu.cs622.jlitebox.image;
 
 import edu.bu.cs622.jlitebox.App;
+import edu.bu.cs622.jlitebox.exceptions.ImageImportException;
 import edu.bu.cs622.jlitebox.image.metadata.ImageMetadata;
+import edu.bu.cs622.jlitebox.image.preview.ImagePreviewGenerator;
 import edu.bu.cs622.jlitebox.utils.AppUtils;
+import io.vavr.control.Try;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.Map;
@@ -106,5 +109,26 @@ public abstract class Image {
      */
     public String toFilename() {
         return AppUtils.getFilename(getOriginalSrcPath());
+    }
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    private Optional<javafx.scene.image.Image> previewForDisplay;
+
+    /**
+     * Generate preview for display
+     *
+     * @param previewGenerator the preview generator
+     * @param width            height
+     * @param height           width
+     * @return the preview
+     */
+    @SuppressWarnings("OptionalAssignedToNull")
+    public synchronized Optional<javafx.scene.image.Image> generatePreviewForDisplay(
+                    ImagePreviewGenerator previewGenerator, int width, int height) {
+        if (previewForDisplay == null)
+            previewForDisplay = Try.of(() -> previewGenerator.generatePreviewForDisplay(this, width, height))
+                            .toJavaOptional();
+
+        return previewForDisplay;
     }
 }

@@ -1,7 +1,9 @@
 package edu.bu.cs622.jlitebox.controller.gui;
 
 import com.google.inject.Injector;
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXChipView;
+import com.jfoenix.controls.JFXSpinner;
 import com.jfoenix.controls.JFXToggleButton;
 import edu.bu.cs622.jlitebox.App;
 import edu.bu.cs622.jlitebox.filter.ImageContentFilter;
@@ -12,14 +14,12 @@ import edu.bu.cs622.jlitebox.image.metadata.ImageMetadata;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Try;
-import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -27,13 +27,12 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -52,8 +51,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -90,6 +89,15 @@ public class MainController implements Initializable {
     }
 
     private int theCurrentImageIndex = 0;
+
+    @FXML
+    private JFXButton navNextButton;
+
+    @FXML
+    private JFXButton navPrevButton;
+
+    @FXML
+    private JFXSpinner navSpinner;
 
     @FXML
     private Label catalogStatistics;
@@ -263,8 +271,8 @@ public class MainController implements Initializable {
         vbox.setOnMouseClicked(mouseEvent -> {
             var imagesList = List.copyOf(images);
             var matchIndex = IntStream.range(0, images.size())
-                    .filter(i -> imagesList.get(i).getName().equalsIgnoreCase(image.getName()))
-                    .findFirst();
+                            .filter(i -> imagesList.get(i).getName().equalsIgnoreCase(image.getName()))
+                            .findFirst();
 
             matchIndex.ifPresent(i -> {
                 theCurrentImageIndex = i;
@@ -413,7 +421,7 @@ public class MainController implements Initializable {
     }
 
     public void handleRevealButton(ActionEvent event) throws IOException {
-        var imagesAsList = new ArrayList<>(images);
+        var imagesAsList = List.copyOf(images);
         var image = imagesAsList.get(theCurrentImageIndex);
         var revealLocation = new File(catalog.getStorage().getRootDirectory(), image.toFilename());
 
@@ -510,10 +518,7 @@ public class MainController implements Initializable {
                             logger.info("Add Image vbox for {} to grid...", image.getName());
                             Platform.runLater(() -> {
                                 gridContainer.getChildren().add(vb);
-                                FadeTransition ft = new FadeTransition(Duration.millis(1500), vb);
-                                ft.setFromValue(0.0);
-                                ft.setToValue(1.0);
-                                ft.play();
+
                             });
 
                             return vb;
@@ -559,18 +564,31 @@ public class MainController implements Initializable {
     }
 
     private void renderTheImageInSplitView() {
-        var imagesAsList = new ArrayList<>(images);
+        navPrevButton.setDisable(true);
+        navNextButton.setDisable(true);
+        navSpinner.setVisible(true);
 
-        if (theCurrentImageIndex < 0 || theCurrentImageIndex > images.size() - 1)
-            theCurrentImageIndex = 0;
+        CompletableFuture.runAsync(() -> {
+            var imagesAsList = List.copyOf(images);
 
-        var current = imagesAsList.get(theCurrentImageIndex);
-        current.getPreview().ifPresent(p -> {
-            theCurrentImage.setImage(p);
-        });
+            if (theCurrentImageIndex < 0 || theCurrentImageIndex > images.size() - 1)
+                theCurrentImageIndex = 0;
 
-        theCurrentImageLabel.setText(
+            var current = imagesAsList.get(theCurrentImageIndex);
+            var preview = current.generatePreviewForDisplay(catalog.getPreviewGenerator(), 2400, 1600);
+            preview.ifPresent(p -> theCurrentImage.setImage(p));
+
+            Platform.runLater(() -> {
+                theCurrentImageLabel.setText(
                         String.format("%s\n%s", current.getName(), current.getMetadata().getStringForLabelDisplay()));
+            });
+        }).thenRun(() -> {
+           Platform.runLater(() -> {
+               navSpinner.setVisible(false);
+               navPrevButton.setDisable(false);
+               navNextButton.setDisable(false);
+           });
+        });
     }
 
     private void initializeToggleHandlers() {

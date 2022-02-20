@@ -35,7 +35,6 @@ public class SplashController implements Initializable {
 
     private Injector injector;
 
-
     @Inject
     public SplashController(ImageCatalog catalog) {
         logger.info("Launching main GUI controller...");
@@ -56,38 +55,39 @@ public class SplashController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         CompletableFuture.runAsync(() -> {
             Try.run(() -> Thread.sleep(1000));
-            Try.run(() -> catalog.loadImages((image, current, count) ->{
+            Try.run(() -> catalog.loadImages((image, current, count) -> {
                 Platform.runLater(() -> {
                     buildInfo.setText("Build v" + ConfigurationManager.getVersionInfo().orElse("1.0"));
                     statusText.setText(String.format("Loading %d of %d images...", current, count));
                 });
+
                 return null;
             }));
 
             Platform.runLater(() -> {
                 try {
-                Stage stage = new Stage();
-                // Load FXML
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
+                    Stage stage = new Stage();
+                    // Load FXML
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
 
-                // Set the controller and set the controller factory to use Guice
-                // see https://stackoverflow.com/a/23471463/918858
-                loader.setControllerFactory(injector::getInstance);
-                Parent root = null;
-                root = loader.load();
-                Scene scene = new Scene(root, 1200, 800);
-                stage.getIcons().add(getAppIcon());
-                stage.setTitle(App.APP_NAME);
-                stage.setScene(scene);
+                    // Set the controller and set the controller factory to use Guice
+                    // see https://stackoverflow.com/a/23471463/918858
+                    loader.setControllerFactory(injector::getInstance);
+                    Parent root = null;
+                    root = loader.load();
+                    Scene scene = new Scene(root, 1200, 800);
+                    stage.getIcons().add(getAppIcon());
+                    stage.setTitle(App.APP_NAME);
+                    stage.setScene(scene);
 
-                // set the injector in the main controller
-                ((MainController) loader.getController()).setInjector(injector);
+                    // set the injector in the main controller
+                    ((MainController) loader.getController()).setInjector(injector);
 
-                // show the main GUI
-                stage.show();
+                    // show the main GUI
+                    stage.show();
 
-                // hide the splash window
-                mainSplashPane.getScene().getWindow().hide();
+                    // hide the splash window
+                    mainSplashPane.getScene().getWindow().hide();
                 } catch (IOException e) {
                     logger.error("Cannot load main screen: " + e.getMessage(), e);
                 }
