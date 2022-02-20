@@ -374,6 +374,22 @@ public class MainController implements Initializable {
         leftToolBarPane.setPrefWidth(visibleToggle ? USE_COMPUTED_SIZE : 0);
     }
 
+    public void handlePreviousImageButton(ActionEvent event) {
+        theCurrentImageIndex--;
+        if (theCurrentImageIndex <= 0)
+            theCurrentImageIndex = images.size() - 1;
+
+        renderTheImageInSplitView();
+    }
+
+    public void handleNextImageButton(ActionEvent event) {
+        theCurrentImageIndex++;
+        if (theCurrentImageIndex >= images.size() - 1)
+            theCurrentImageIndex = 0;
+
+        renderTheImageInSplitView();
+    }
+
     static class ImageBox {
         VBox vbox;
         Pane imageView;

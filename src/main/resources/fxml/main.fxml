@@ -59,14 +59,14 @@
                             </padding>
                             <HBox spacing="10.0">
                                 <JFXButton stylesheets="@../css/material-design.css"
-                                           styleClass="custom-jfx-button-raised" text="Previous">
+                                           styleClass="custom-jfx-button-raised" text="Previous" onAction="#handlePreviousImageButton">
                                     <graphic>
                                         <FontIcon iconLiteral="mdi2c-chevron-left" iconSize="20"
                                                   styleClass="icon"/>
                                     </graphic>
                                 </JFXButton>
                                 <JFXButton contentDisplay="RIGHT" stylesheets="@../css/material-design.css"
-                                           styleClass="custom-jfx-button-raised" text="Next">
+                                           styleClass="custom-jfx-button-raised" text="Next" onAction="#handleNextImageButton">
                                     <graphic>
                                         <FontIcon iconLiteral="mdi2c-chevron-right" iconSize="20"
                                                   styleClass="icon"/>
