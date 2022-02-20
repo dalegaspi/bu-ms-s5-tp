@@ -56,7 +56,7 @@ JLiteBox is a JavaFx application that catalogs RAW and JPG images and allows the
 - [Jackson](https://github.com/FasterXML/jackson)
 
 ## Build
-The Maven configuration creates a jar file `jlitebox-1.0-SNAPSHOT-jar-with-dependencies.jar` in the `/target` directory.  Note that there is also another smaller `jlitebox-1.0-SNAPSHOT.jar` that's available but that will not have all the app dependencies and will require you to set up the classpath for the app's dependencies.
+The Maven configuration creates a jar file `jlitebox-1.0-SNAPSHOT.jar` in the `/target` directory.  Note that there is also another smaller `jlitebox-1.0-SNAPSHOT.jar` that's available but that will not have all the app dependencies and will require you to set up the classpath for the app's dependencies.
 
 ```shell
 $ mvn package
@@ -77,13 +77,13 @@ The project runs on language level 11 but requires Java 17 to run to be able to 
 ```shell
 $ java --enable-native-access ALL-UNNAMED \
 	--add-modules jdk.incubator.foreign \
-	-jar jlitebox-1.0-SNAPSHOT-jar-with-dependencies.jar
+	-jar jlitebox-1.0-SNAPSHOT.jar.jar
 ```
 
 The standard way of running the app with all its features.  For this iteration, it now displays all images in the catalog:
 
 <p align="center">
-  <img alt="gui" src="./doc/mini-demo.gif" width="70%"/>
+  <img alt="gui" src="./doc/final-gui.png" width=""/>
 </p>
 
 ### Importing from a Directory (GUI Bypass)
@@ -91,7 +91,7 @@ The standard way of running the app with all its features.  For this iteration, 
 ```shell
 $ java --enable-native-access ALL-UNNAMED \
 	--add-modules jdk.incubator.foreign \
-	-jar jlitebox-1.0-SNAPSHOT-jar-with-dependencies.jar -d {import-dir}
+	-jar jlitebox-1.0-SNAPSHOT.jar.jar -d {import-dir}
 ```
 
 Imports the images in specified directory `import-dir` to store them in the configured catalog and logs the activity/status on the standard output (usually the screen).
@@ -102,7 +102,7 @@ There is a sample folder that's available under `sample/images` so you can test 
 $ cd target/
 $ java --enable-native-access ALL-UNNAMED \
 	--add-modules jdk.incubator.foreign \
-	-jar jlitebox-1.0-SNAPSHOT-jar-with-dependencies.jar -d ../sample/images/
+	-jar jlitebox-1.0-SNAPSHOT.jar.jar -d ../sample/images/
 ```
 
 ### Importing from a URL List File (GUI Bypass)
@@ -115,7 +115,7 @@ There is a sample file that's available under `sample/import.txt` so you can tes
 $ cd target/
 $ java --enable-native-access ALL-UNNAMED \
 	--add-modules jdk.incubator.foreign \
-	-jar jlitebox-1.0-SNAPSHOT-jar-with-dependencies.jar -i ../sample/import.txt
+	-jar jlitebox-1.0-SNAPSHOT.jar.jar -i ../sample/import.txt
 ```
 ## Configuration
 

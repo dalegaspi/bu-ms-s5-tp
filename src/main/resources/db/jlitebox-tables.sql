@@ -7,7 +7,7 @@ create table if not exists camera
     id           text
         primary key,
     brand        text not null,
-    model        text default 'Mansur',
+    model        text,
     is_autofocus integer default 0
 );
 
