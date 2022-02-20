@@ -72,4 +72,11 @@ public interface ImageMetadataStorage {
                         .map(e -> String.format("%s: %s", e.getKey(), e.getValue()))
                         .collect(Collectors.joining("\n"));
     }
+
+    /**
+     * Get all metadata
+     *
+     * @return list
+     */
+    List<Image> getAllAsList() throws ImageOperationException;
 }

@@ -33,6 +33,8 @@ import javafx.scene.control.*;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.InnerShadow;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -57,6 +59,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
+import static javafx.scene.input.KeyCode.LEFT;
 import static javafx.scene.layout.Region.USE_COMPUTED_SIZE;
 
 /**
@@ -438,6 +441,31 @@ public class MainController implements Initializable {
         }
     }
 
+    public void handleOnKeyPressed(KeyEvent keyEvent) {
+        switch (keyEvent.getCode()) {
+            case LEFT:
+                logger.info("Left key pressed");
+                if (!toggleGridView.isSelected()) {
+                    navPrevButton.fire();
+                    keyEvent.consume();
+                }
+                break;
+
+            case RIGHT:
+                logger.info("Right key pressed");
+                if (!toggleGridView.isSelected()) {
+                    navNextButton.fire();
+                    keyEvent.consume();
+                }
+                break;
+                
+            case SPACE:
+                logger.info("Spacebar pressed");
+                toggleGridView.fire();
+                keyEvent.consume();
+        }
+    }
+
     static class ImageBox {
         VBox vbox;
         Pane imageView;
@@ -656,5 +684,7 @@ public class MainController implements Initializable {
         initializePreviewSizeSlider();
         initializeFilterTextBox();
         initializeCatalogStatistics();
+
+        var lst = Try.of(() -> catalog.getMetadataStorage().getAllAsList());
     }
 }

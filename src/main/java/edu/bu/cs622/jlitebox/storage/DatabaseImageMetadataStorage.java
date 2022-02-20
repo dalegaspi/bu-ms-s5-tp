@@ -329,4 +329,27 @@ public final class DatabaseImageMetadataStorage implements ImageMetadataStorage,
                         getStatsFromQuery("select count(*) from image_with_metadata where camera_autofocus = 1"));
         return map;
     }
+
+    static final String QUERY_IMAGES_PSTATEMENT = "select src_path, image_type, raw_metadata " +
+            "from image_with_metadata order by capture_date desc";
+
+    @Override
+    public List<Image> getAllAsList() throws ImageOperationException {
+        var list = new ArrayList<Image>();
+        try (var stmt = conn.prepareStatement(QUERY_IMAGES_PSTATEMENT)) {
+            var rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                var src = rs.getString(1);
+                var itype = rs.getString(2);
+                var jsonMetadata = rs.getString(3);
+                var rec = new DatabaseRecord(src, itype, null, jsonMetadata);
+                loadImage(rec.image.getName()).ifPresent(list::add);
+            }
+        } catch (SQLException e) {
+            throw new ImageOperationException("Unable to retrieve metadata list due to DB error: " + e.getMessage(), e);
+        }
+
+        return list;
+    }
 }

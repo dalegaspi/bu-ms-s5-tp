@@ -12,7 +12,8 @@
 <BorderPane fx:id="mainViewPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
             minHeight="-Infinity" minWidth="-Infinity" style="-fx-border-width :0 0; -fx-background-color: lightgray"
             xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="edu.bu.cs622.jlitebox.controller.gui.MainController">
+            fx:controller="edu.bu.cs622.jlitebox.controller.gui.MainController"
+onKeyPressed="#handleOnKeyPressed">
     <top>
         <MenuBar stylesheets="@../css/remove-borders.css">
             <Menu text="File">
