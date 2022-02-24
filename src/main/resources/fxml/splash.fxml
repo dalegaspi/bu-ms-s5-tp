@@ -5,32 +5,36 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="mainSplashPane" prefHeight="400.0" prefWidth="600.0" style="-fx-background-image: url('https://www.subtleimages.com/s/tp01/images/gallery/i.jpg'); -fx-background-size: cover, auto;" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="edu.bu.cs622.jlitebox.controller.gui.SplashController">
-   <children>
-       <ImageView fitHeight="117.0" fitWidth="114.0" layoutX="243.0" layoutY="39.0" pickOnBounds="true" preserveRatio="true">
-           <image>
-               <Image url="@../logo.png" />
-           </image>
-       </ImageView>
-      <ImageView fitHeight="37.0" fitWidth="94.0" layoutX="14.0" layoutY="349.0" opacity="0.65" pickOnBounds="true" preserveRatio="true">
-          <image>
-              <Image url="@../bu-logo.png" />
-          </image>
-      </ImageView>
-      <Label layoutX="162.0" layoutY="171.0" text="JLiteBox Image Viewer" textAlignment="CENTER" textFill="#ffffffe5">
-         <font>
-            <Font name="SF Pro Text Bold" size="24.0" />
-         </font>
-      </Label>
-       <Label fx:id="buildInfo" alignment="CENTER" contentDisplay="CENTER" layoutX="175.0" layoutY="200.0" prefHeight="18.0" prefWidth="251.0" text="Build v1.0" textAlignment="CENTER" textFill="#ffffffe5">
-           <font>
-               <Font name="SF Pro Text Light" size="14.0" />
-           </font>
-       </Label>
-      <Label fx:id="statusText" layoutX="422.0" layoutY="368.0" opacity="0.7" style="-fx-opacity: 60;" text="Loading images from catalog..." textAlignment="RIGHT" textFill="#ffffffb3">
-         <font>
-            <Font name="SF Pro Text Light" size="12.0" />
-         </font>
-      </Label>
-   </children>
+<AnchorPane fx:id="mainSplashPane" prefHeight="400.0" prefWidth="600.0"
+            style="-fx-background-image: url('https://picsum.photos/600/400'); -fx-background-size: cover, auto;"
+            xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="edu.bu.cs622.jlitebox.controller.gui.SplashController">
+    <children>
+        <ImageView fitHeight="117.0" fitWidth="114.0" layoutX="243.0" layoutY="39.0" pickOnBounds="true"
+                   preserveRatio="true">
+            <image>
+                <Image url="https://www.fillmurray.com/125/125"/>
+            </image>
+        </ImageView>
+        <Label blendMode="HARD_LIGHT" contentDisplay="CENTER" layoutX="196.0" layoutY="164.0" text="A Bill Murray App"
+               textAlignment="CENTER" textFill="#ffffffe5">
+            <font>
+                <Font name="SF Pro Text Bold" size="24.0"/>
+            </font>
+        </Label>
+        <Label fx:id="buildInfo" alignment="CENTER" blendMode="HARD_LIGHT" contentDisplay="CENTER" layoutX="175.0"
+               layoutY="200.0" prefHeight="18.0" prefWidth="251.0" text="Build v1.0" textAlignment="CENTER"
+               textFill="#ffffffe5">
+            <font>
+                <Font name="SF Pro Text Light" size="14.0"/>
+            </font>
+        </Label>
+        <Label fx:id="statusText" blendMode="HARD_LIGHT" layoutX="405.0" layoutY="371.0" opacity="0.7"
+               style="-fx-opacity: 60;" text="Loading images from catalog..." textAlignment="RIGHT"
+               textFill="#ffffffb3">
+            <font>
+                <Font name="SF Pro Text Light" size="12.0"/>
+            </font>
+        </Label>
+    </children>
 </AnchorPane>
