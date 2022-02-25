@@ -12,6 +12,8 @@ import edu.bu.cs622.jlitebox.image.Image;
 import edu.bu.cs622.jlitebox.image.ImageCatalog;
 import edu.bu.cs622.jlitebox.image.ImageFactory;
 import edu.bu.cs622.jlitebox.image.metadata.ImageMetadata;
+import edu.bu.cs622.jlitebox.options.UserOptions;
+import edu.bu.cs622.jlitebox.options.UserOptionsFilePersistence;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Try;
@@ -21,6 +23,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -91,6 +95,7 @@ public class MainController implements Initializable {
 
     public void setInjector(Injector injector) {
         this.injector = injector;
+        initializeUserOptionsPersistence();
     }
 
     private int theCurrentImageIndex = 0;
@@ -712,6 +717,27 @@ public class MainController implements Initializable {
         this.catalogStatistics.setText(catalog.getMetadataStorage().getFormattedStatistics());
     }
 
+    private UserOptions options;
+    private UserOptionsFilePersistence userOptionsPersistence;
+
+    private void initializeUserOptionsPersistence() {
+        userOptionsPersistence = injector.getInstance(UserOptionsFilePersistence.class);
+        options = userOptionsPersistence.load().orElse(new UserOptions());
+
+        if (options.getFilters().size() > 0) {
+            filterStrings.getChips().addAll(options.getFilters());
+            this.images = catalog.getImages(ImageContentFilter.fromFilterStringList(filterStrings.getChips()));
+            initializeImageCollectionView(false);
+        }
+
+        toggleGridView.setSelected(options.isEnableGridView());
+        toggleShowExif.setSelected(options.isShowExifOnHover());
+
+        previewSizeSlider.valueProperty().setValue(options.getPreviewSize());
+
+        userOptionsPersistence.save(options);
+    }
+
     /**
      * initialization of the component wired to this controller
      *
@@ -724,6 +750,8 @@ public class MainController implements Initializable {
 
         mainViewPane.setCenter(mainGridViewContainer);
         images = catalog.getImages();
+
+
         initializeImageCollectionView(false);
         initializeToggleHandlers();
         initializePreviewSizeSlider();

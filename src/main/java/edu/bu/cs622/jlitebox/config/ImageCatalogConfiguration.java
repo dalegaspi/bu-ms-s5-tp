@@ -67,4 +67,8 @@ public interface ImageCatalogConfiguration {
     default int getImageLoadThreads() {
         return getImageImportThreads();
     }
+
+    default String getFileOptionsBaseDir() {
+        return "/tmp";
+    }
 }
